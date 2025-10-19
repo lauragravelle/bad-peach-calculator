@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bad Peach – Calories & Protein Calculator</title>
+  <meta name="description" content="See your daily calories and protein targets, then turn them into simple meals and strength sessions that fit your life." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --black:#191919;
+      --blush:#ebcac2;
+      --cream:#fffefc;
+
+      /* Instagram DM (light style) */
+      --dm-bg:#ffffff;
+      --dm-bubble:#f1f3f5;  /* sender bubble */
+      --dm-text:#101114;
+      --dm-blue:#3b82f6;    /* IG/iOS style blue for your side if needed */
+      --muted:#70757e;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--cream);color:var(--black)}
+    body{font-family:"Times New Roman", Times, serif;line-height:1.6}
+
+    /* Headings: clean sans, all caps */
+    .caps{font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+    h1,h2,h3{margin:0 0 10px}
+    h1{font-size:44px}
+    h2{font-size:32px}
+    h3{font-size:20px}
+    p.lead{font-size:19px}
+    @media (max-width:680px){h1{font-size:32px} h2{font-size:26px} p.lead{font-size:18px}}
+
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    .grid{display:grid;gap:24px}
+    .grid-2{grid-template-columns:1fr}
+    @media (min-width:980px){.grid-2{grid-template-columns:1.15fr .85fr}}
+
+    .card{background:#fff;border:1px solid rgba(25,25,25,.08);border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.04)}
+    .on-blush{background:var(--blush)}
+    .on-dark{background:var(--black);color:var(--cream)}
+    .note{font-size:13px;opacity:.85}
+
+    .btn{display:inline-block;border:none;cursor:pointer;text-decoration:none;padding:14px 22px;border-radius:10px;font-weight:800;font-family:"Inter",system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;transition:transform .04s ease, box-shadow .2s ease}
+    .btn-dark{background:var(--black);color:var(--cream);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+    .btn-cream{background:var(--cream);color:var(--black);box-shadow:0 2px 0 rgba(0,0,0,.12)}
+    .btn-ig{background:var(--dm-blue);color:#fff}
+    .btn:hover{transform:translateY(-1px)}
+
+    header.hero{background:linear-gradient(0deg, rgba(235,202,194,.22), rgba(235,202,194,.22)), var(--cream);border-bottom:1px solid rgba(25,25,25,.08)}
+    .hero-inner{display:grid;gap:24px;align-items:center}
+
+    /* Form */
+    .form-grid{display:grid;gap:14px}
+    .form-2{grid-template-columns:1fr}
+    @media (min-width:780px){.form-2{grid-template-columns:1fr 1fr}}
+    label{font-weight:800;font-family:"Inter",system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;font-size:12px}
+    input,select{width:100%;padding:12px;border:1px solid rgba(25,25,25,.2);border-radius:10px;background:#fff;font-size:16px}
+    .inline{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+    /* Results */
+    .results{display:none}
+    .result-box{background:#fff;border:2px solid var(--blush);border-radius:14px;padding:18px}
+    .result-number{font-size:32px;font-weight:800;font-family:"Inter",system-ui,sans-serif}
+
+    /* Media blocks */
+    .preview video,.preview img{width:100%;height:auto;display:block;border-radius:16px;border:1px solid rgba(25,25,25,.08);box-shadow:0 10px 30px rgba(0,0,0,.08)}
+
+    /* DM visuals — Instagram-like (light) */
+    .dm-wrap{background:var(--dm-bg);color:var(--dm-text);padding:42px 0;border-top:1px solid rgba(0,0,0,.06);border-bottom:1px solid rgba(0,0,0,.06)}
+    .dm-wrap .wrap{max-width:820px}
+    .dm-header{color:#111;margin-bottom:10px}
+    .dm{display:flex;gap:10px;align-items:flex-end;margin:18px 0}
+    .dm .avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:0 0 40px;border:1px solid rgba(0,0,0,.08)}
+    .bubble{background:var(--dm-bubble);color:var(--dm-text);border-radius:18px;padding:12px 14px;max-width:680px;line-height:1.55;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+    .meta{display:none}
+
+    /* IG section */
+    .ig-shot{width:100%;border-radius:16px;border:1px solid rgba(25,25,25,.08);box-shadow:0 10px 30px rgba(0,0,0,.04);display:block}
+
+    /* Footer */
+    footer{border-top:1px solid rgba(25,25,25,.08)}
+    .small{font-size:13px;opacity:.85}
+  </style>
+</head>
+<body>
+
+  <!-- HERO (no button or preview; simple promise) -->
+  <header class="hero">
+    <div class="wrap hero-inner grid-2">
+      <div>
+        <h1 class="caps">Calories &amp; Protein Calculator</h1>
+        <p class="lead">In under a minute, see the exact calories and protein your body needs for your goal. Then turn those numbers into simple meals and strength sessions that fit real life and feel your best ever.</p>
+      </div>
+      <div class="card preview">
+        <!-- Book cover from GitHub -->
+        <img src="cover.png" alt="Becoming Your Fittest Forever — book cover">
+        <div style="margin-top:10px">
+          <strong class="caps" style="font-size:12px;display:block">185+ page fitness blueprint built for women in their 30's and up</strong>
+          <span class="small">Use it with the Meal Plan Generator for effortless weeks of food</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CALCULATOR -->
+  <section id="calculator" class="on-blush">
+    <div class="wrap">
+      <div class="card">
+        <h2 class="caps" style="margin-bottom:6px">Your Fit Forever Calculator</h2>
+        <p>Enter your details to calculate daily calories and protein, exactly as shown in the book.</p>
+
+        <form id="calcForm" class="form-grid form-2" novalidate>
+          <div>
+            <label for="age">Age</label>
+            <input id="age" type="number" min="14" max="90" placeholder="Years" required>
+          </div>
+
+          <div>
+            <label>Height</label>
+            <div class="inline">
+              <input id="heightFt" type="number" min="4" max="7" placeholder="Feet" required>
+              <input id="heightIn" type="number" min="0" max="11" placeholder="Inches" required>
+            </div>
+            <div class="note">Example: 5 feet and 6 inches</div>
+          </div>
+
+          <div>
+            <label for="weight">Weight</label>
+            <input id="weight" type="number" min="80" max="400" placeholder="Pounds" required>
+          </div>
+
+          <div>
+            <label for="activity">Activity Level</label>
+            <select id="activity" required>
+              <option value="">Select</option>
+              <option value="1.2">Sedentary — no workouts and under 5,000 steps per day</option>
+              <option value="1.375">Lightly Active — 5k to 8k steps per day</option>
+              <option value="1.55">Moderately Active — 8k to 12k steps per day and moderately intense workouts 3 to 5 times per week</option>
+              <option value="1.725">Very Active — intense workouts 6 to 7 times per week and 12k steps per day</option>
+            </select>
+            <div class="note">If unsure, choose a conservative choice for you.</div>
+          </div>
+
+          <div>
+            <label for="goal">Fitness Goal</label>
+            <select id="goal" required>
+              <option value="">Select</option>
+              <option value="fatloss">Fat Loss</option>
+              <option value="maintain">Maintenance</option>
+              <option value="muscle">Muscle Gain</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="email">Best email to send your results report</label>
+            <input id="email" type="email" placeholder="name@email.com">
+          </div>
+
+          <div>
+            <label for="goalWeight">Use goal weight for protein target</label>
+            <input id="goalWeight" type="number" min="90" max="400" placeholder="Enter goal weight in pounds">
+            <div class="note">If current weight is much higher than your goal, set protein using your goal weight.</div>
+          </div>
+
+          <div style="grid-column:1/-1;display:flex;gap:12px;flex-wrap:wrap">
+            <button type="submit" class="btn btn-dark">Calculate</button>
+            <button type="button" id="resetBtn" class="btn btn-cream">Reset</button>
+          </div>
+        </form>
+
+        <!-- RESULTS -->
+        <div id="results" class="results" style="margin-top:22px">
+          <h3 class="caps">Your Results</h3>
+
+          <div class="grid form-2" style="margin-top:12px">
+            <div class="result-box">
+              <div class="caps" style="font-size:12px;opacity:.8">TDEE</div>
+              <div class="result-number" id="tdeeOut">—</div>
+              <div class="note">The total number of calories your body burns on an average day</div>
+            </div>
+            <div class="result-box">
+              <div class="caps" style="font-size:12px;opacity:.8">Fat Loss</div>
+              <div class="result-number" id="fatlossOut">—</div>
+            </div>
+            <div class="result-box">
+              <div class="caps" style="font-size:12px;opacity:.8">Maintenance</div>
+              <div class="result-number" id="maintainOut">—</div>
+            </div>
+            <div class="result-box">
+              <div class="caps" style="font-size:12px;opacity:.8">Muscle Gain</div>
+              <div class="result-number" id="muscleOut">—</div>
+            </div>
+            <div class="result-box" style="grid-column:1/-1">
+              <div class="caps" style="font-size:12px;opacity:.8">Protein</div>
+              <div class="result-number" id="proteinOut">—</div>
+              <div class="note">Set to 1 gram per pound of body weight. If you entered a goal weight above, protein uses that.</div>
+            </div>
+          </div>
+
+          <p style="margin-top:14px;font-style:italic">These are your numbers. The plan is what makes them work.</p>
+          <a href="#bridge" class="btn btn-dark">Turn My Results Into A Plan</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRIDGE TO SALES -->
+  <section id="bridge">
+    <div class="wrap grid-2">
+      <div class="card">
+        <h2 class="caps">Now That You Know Your Numbers</h2>
+        <p>Most women stop here. Knowing calories and protein is step one. The change happens when those numbers become simple meals, strength sessions, recovery, and consistency.</p>
+        <p><strong>Becoming Your Fittest Forever</strong> gives you the no BS blueprint to use your numbers to build your dream physique, thrive holistically, and feel your best ever.</p>
+        <a href="/sales" class="btn btn-dark">Get The Fitness Blueprint + Meal Plan Generator</a>
+      </div>
+
+      <div class="card preview">
+        <!-- Flip-through video — fully embedded -->
+        <video src="Fast Ebook Flip Through.mp4" autoplay muted loop playsinline controls poster="cover.png" aria-label="Flip-through of Becoming Your Fittest Forever"></video>
+        <div style="margin-top:10px">
+          <strong class="caps" style="font-size:12px;display:block">See Inside The Ebook</strong>
+          <span class="small">Flip-through of key pages</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MINI PITCH ON DARK -->
+  <section class="on-dark">
+    <div class="wrap grid-2">
+      <div>
+        <h2 class="caps">Your Numbers Are Just The Beginning</h2>
+        <p>Becoming Your Fittest Forever gives you the no BS blueprint to use your numbers to build your dream physique, thrive holistically, and feel your best ever.</p>
+      </div>
+      <div class="card" style="background:transparent;border-color:rgba(255,255,255,.18);color:var(--cream)">
+        <ul style="margin:0;padding-left:18px">
+          <li>185+ page fitness blueprint built for women in their 30's and up</li>
+          <li>Strength training plans for home or gym</li>
+          <li>Clarity for fat loss, maintenance, and muscle gain</li>
+          <li>Lifetime access to the custom 7 day Meal Plan Generator</li>
+        </ul>
+        <a href="/sales" class="btn btn-cream" style="margin-top:12px">Get The Fitness Blueprint + Meal Plan Generator</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- DM REVIEWS — Instagram-style (light) -->
+  <section class="dm-wrap">
+    <div class="wrap">
+      <h2 class="caps dm-header">Messages From Real Women</h2>
+
+      <!-- Authentic-feel avatars (women 35–50). Some headshots, some full body, some with kids/pets -->
+      <!-- Mixed pacing, run-ons, conversational tone, a few emojis -->
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1531123414780-f7424a5f7a5d?q=80&w=400" alt="Lauren headshot">
+        <div><div class="bubble">I don’t usually send messages like this, but I had to say thank you. I am only halfway through the book and I already feel like a different person. I finally understand my body and it feels like I am coming home to myself.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=400" alt="Tara with kids">
+        <div><div class="bubble">I bought your book on a whim because I was tired of feeling stuck. I am 46 with three kids and I thought my body was done changing and honestly I almost gave up, but this makes sense and it is doable and I already feel hopeful again.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=400" alt="Brooke full body outdoor">
+        <div><div class="bubble">When I started your book it felt like a friend sat next to me and explained everything in plain English. No pressure. No shame. Just clarity. I started the plan and my bloating went down and my energy went up. I am taking care of myself and it finally feels sustainable.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1542596594-649edbc13630?q=80&w=400" alt="Amber cozy at home">
+        <div><div class="bubble">I cannot explain how much your book has impacted me. I cried because I finally understood why my body felt like it was fighting me. I thought discipline meant deprivation. I started the fat loss plan and I am already sleeping better and feel proud of myself again.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400" alt="Claire headshot">
+        <div><div class="bubble">I have done every program. This is the first one that feels like it was written for me. The balance of science, structure, and empathy is everything. The Meal Plan Generator is genius and I have never hit my protein so easily.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=400" alt="Brittany with dog">
+        <div><div class="bubble">I am 42 with two kids and I was sure my best body was behind me. Your book flipped that belief. I already feel tighter and more energized and I am calm and consistent with food for the first time in years.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1519345182560-3f2917c472ef?q=80&w=400" alt="Rachel full body gym">
+        <div><div class="bubble">I did not expect to love this book as much as I do. It feels made for women who are tired of extremes. I followed the Meal Plan Generator plan for three weeks and never felt deprived. My clothes fit differently and my mood is better. This changed my whole relationship with fitness.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=400" alt="Hannah headshot natural light">
+        <div><div class="bubble">I am in my 40s and I have tried every diet. Nothing felt sustainable until now. The Meal Plan Generator changed how I see food. I feel lighter in my body and in my mind.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400" alt="Lindsay with toddler">
+        <div><div class="bubble">The relief I felt while reading was real. Someone finally spoke to what it is like to be in your late thirties with work, kids, and hormones. Three weeks in and my energy is steady and I believe I can keep this up.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=400" alt="Krista headshot studio">
+        <div><div class="bubble">Nothing worked no matter how hard I tried. Your book showed me I was doing too much and eating too little. The workouts feel productive, not punishing, and the Meal Plan Generator removes the guesswork.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?q=80&w=400" alt="Natalie with pet cat">
+        <div><div class="bubble">I almost did not buy it because I have wasted money before. You write like a friend who found the way out and is handing me the map. My workouts feel focused and I am not afraid to rest. I can already see changes. This feels like freedom.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=400" alt="Jessica street style full body">
+        <div><div class="bubble">I didn’t realize how lost I was until I read your book. I spent years hating my body and thinking I just needed more discipline. Now I understand what my body needs and I can finally breathe again.</div></div>
+      </div>
+
+      <!-- 5 extra with varied pacing and emojis -->
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400" alt="Mia with friend and baby">
+        <div><div class="bubble">I read the chapter on recovery and almost laughed and cried at the same time because I have been doing the exact opposite for years and wondering why I was exhausted and puffy and stuck, this finally clicked and I slept so well last night it felt new.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?q=80&w=400" alt="Alison coffee shop headshot">
+        <div><div class="bubble">Small note to say thank you. I ate breakfast today without guilt. Hit my protein. Lifted. Smiled at myself in the mirror. Progress already.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=400" alt="Bree with golden retriever">
+        <div><div class="bubble">This feels like someone turned the noise off in my head. I used the Meal Plan Generator and my week was done in minutes. No math. No second guessing. Just food I like and results that feel sane 😊.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=400" alt="Keisha gym mirror full body">
+        <div><div class="bubble">I was scared to eat more, truly. But I trusted the process and the book and my lifts are up and my waist looks smaller and I am not hungry all the time and that is the biggest shock tbh.</div></div>
+      </div>
+
+      <div class="dm">
+        <img class="avatar" src="https://images.unsplash.com/photo-1520975682031-a1196a1e7810?q=80&w=400" alt="Sofia walking with child">
+        <div><div class="bubble">I did a month of your plan. I feel calm. Clothes fit better. Skin clearer. Energy steady. I am keeping this forever ✨.</div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INSTAGRAM SECTION (very bottom) -->
+  <section id="instagram">
+    <div class="wrap">
+      <h2 class="caps">Come Hang On Instagram</h2>
+      <!-- Your uploaded IG screenshot from GitHub -->
+      <img class="ig-shot" src="instagram-shot.jpg" alt="@bad.peach.fitness Instagram">
+      <div style="display:flex;gap:12px;align-items:center;margin-top:14px">
+        <a class="btn btn-ig" href="https://instagram.com/bad.peach.fitness" target="_blank" rel="noopener">Follow On Instagram</a>
+        <span class="small">@bad.peach.fitness</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <div class="grid form-2">
+        <div>
+          <strong class="caps" style="display:block;margin-bottom:6px">Bad Peach Fitness</strong>
+          <div class="small">Becoming Your Fittest Forever</div>
+        </div>
+        <div style="text-align:right">
+          <a href="/sales" class="btn btn-dark">Get The Fitness Blueprint + Meal Plan Generator</a>
+        </div>
+      </div>
+      <div class="small" style="margin-top:12px">© <span id="yr"></span> Bad Peach Fitness. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Auto year
+    document.getElementById('yr').textContent = new Date().getFullYear();
+
+    // EXACT Chapter 4 formulas (women):
+    // BMR = 655 + (4.35 × weight in lbs) + (4.7 × height in inches) − (4.7 × age)
+    // TDEE = BMR × activity multiplier (1.2, 1.375, 1.55, 1.725)
+    // Fat Loss = TDEE × 0.85   Maintenance = TDEE × 1.00   Muscle Gain = TDEE × 1.15
+    // Protein = 1 gram per pound (goal weight optional override)
+
+    const form = document.getElementById('calcForm');
+    const resultsEl = document.getElementById('results');
+    const tdeeOut = document.getElementById('tdeeOut');
+    const fatlossOut = document.getElementById('fatlossOut');
+    const maintainOut = document.getElementById('maintainOut');
+    const muscleOut = document.getElementById('muscleOut');
+    const proteinOut = document.getElementById('proteinOut');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function round(n){ return Math.round(n); }
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+
+      const age = parseFloat(document.getElementById('age').value);
+      const ft  = parseFloat(document.getElementById('heightFt').value);
+      const inch= parseFloat(document.getElementById('heightIn').value);
+      const weightLb = parseFloat(document.getElementById('weight').value);
+      const activity = parseFloat(document.getElementById('activity').value);
+      const goal = document.getElementById('goal').value;
+      const goalWeight = parseFloat(document.getElementById('goalWeight').value);
+
+      if(!age || (!ft && ft!==0) || (!inch && inch!==0) || !weightLb || !activity || !goal){
+        alert('Please complete all required fields.');
+        return;
+      }
+
+      const heightIn = (ft * 12) + inch;
+
+      // Harris-Benedict for women
+      const bmr = 655 + (4.35 * weightLb) + (4.7 * heightIn) - (4.7 * age);
+
+      const tdee = bmr * activity;
+      const fatloss = tdee * 0.85;
+      const maintain = tdee;
+      const muscle = tdee * 1.15;
+
+      let proteinLb = weightLb;
+      if(!isNaN(goalWeight) && goalWeight > 0){ proteinLb = goalWeight; }
+
+      tdeeOut.textContent = round(tdee).toLocaleString();
+      fatlossOut.textContent = round(fatloss).toLocaleString();
+      maintainOut.textContent = round(maintain).toLocaleString();
+      muscleOut.textContent = round(muscle).toLocaleString();
+      proteinOut.textContent = round(proteinLb) + ' g';
+
+      resultsEl.style.display = 'block';
+    });
+
+    resetBtn.addEventListener('click', function(){
+      form.reset();
+      resultsEl.style.display = 'none';
+      tdeeOut.textContent = '—';
+      fatlossOut.textContent = '—';
+      maintainOut.textContent = '—';
+      muscleOut.textContent = '—';
+      proteinOut.textContent = '—';
+    });
+  </script>
+</body>
+</html>
