@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bad Peach – Calories & Protein Calculator</title>
+  <meta name="description" content="See your daily calories and protein targets, then turn them into simple meals and strength sessions that fit your life." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --black:#191919;
+      --blush:#ebcac2;
+      --blush-light:#f7e9e6;
+      --cream:#fffefc;
+      --dm-bg:#ffffff;
+      --dm-bubble:#f1f3f5;
+      --dm-text:#101114;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--cream);color:var(--black)}
+    body{font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.65;font-size:17px}
+
+    h1,h2,h3,h4{font-family:"Times New Roman",Times,serif;letter-spacing:.02em}
+    .caps{text-transform:uppercase;letter-spacing:.06em}
+
+    h1{font-size:44px}
+    h2{font-size:32px}
+    h3{font-size:20px}
+    p.lead{font-size:19px}
+    @media (max-width:680px){h1{font-size:32px} h2{font-size:26px} p.lead{font-size:18px}}
+
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    .grid{display:grid;gap:24px}
+    .grid-2{grid-template-columns:1fr}
+    @media (min-width:980px){.grid-2{grid-template-columns:1.15fr .85fr}}
+
+    .card{background:#fff;border:1px solid rgba(25,25,25,.08);border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.04)}
+    .on-blush{background:var(--blush)}
+    .on-blush-light{background:var(--blush-light);color:var(--black)}
+    .note{font-size:13px;opacity:.85}
+
+    /* Buttons */
+    .btn{
+      display:inline-block;border:none;cursor:pointer;text-decoration:none;
+      padding:10px 16px;border-radius:8px;font-weight:600;
+      font-family:"Inter",system-ui,sans-serif;font-size:12px;letter-spacing:.06em;
+      text-transform:uppercase;transition:transform .04s ease, box-shadow .2s ease;white-space:nowrap
+    }
+    .btn-dark{background:var(--black);color:var(--cream);box-shadow:0 2px 0 rgba(0,0,0,.22)}
+    .btn-cream{background:var(--cream);color:var(--black);box-shadow:0 2px 0 rgba(0,0,0,.10)}
+    .btn:hover{transform:translateY(-1px)}
+    .btn-xs{font-size:11px;padding:8px 12px;border-radius:6px}
+
+    header.hero{background:linear-gradient(0deg, rgba(235,202,194,.22), rgba(235,202,194,.22)), var(--cream);border-bottom:1px solid rgba(25,25,25,.08)}
+    .hero-inner{display:grid;gap:24px;align-items:center}
+    .desktop-only{display:block}
+    @media (max-width:680px){.desktop-only{display:none}}
+
+    /* Form */
+    .form-grid{display:grid;gap:14px}
+    .form-2{grid-template-columns:1fr}
+    @media (min-width:780px){.form-2{grid-template-columns:1fr 1fr}}
+    label{font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:12px}
+    input,select{width:100%;height:48px;padding:12px;border:1px solid rgba(25,25,25,.2);border-radius:10px;background:#fff;font-size:16px;line-height:24px}
+    .inline{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+    .results{display:none}
+    .result-box{background:#fff;border:2px solid var(--blush);border-radius:14px;padding:18px}
+    .result-number{font-size:30px;font-weight:800;font-family:"Inter",system-ui,sans-serif}
+
+    .media-9x16{
+      aspect-ratio:9/16;width:320px;max-width:100%;border-radius:16px;
+      border:1px solid rgba(25,25,25,.08);box-shadow:0 10px 30px rgba(0,0,0,.08);
+      object-fit:cover;background:#fff;
+    }
+
+    /* Instagram DM Section */
+    .dm-wrap{background:var(--dm-bg);color:var(--dm-text);padding:42px 0;border-top:1px solid rgba(0,0,0,.06);border-bottom:1px solid rgba(0,0,0,.06)}
+    .dm-header{color:#111;margin-bottom:10px}
+    .dm{display:flex;gap:10px;align-items:flex-start;margin:16px 0}
+    .avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;flex:0 0 36px;border:1px solid rgba(0,0,0,.08)}
+    .bubble{background:var(--dm-bubble);border-radius:18px;padding:12px 14px;line-height:1.55;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+
+    /* Instagram section */
+    .ig-section{background:var(--blush);padding:24px 0}
+    .ig-container{width:320px;max-width:100%;margin:0 auto}
+    .ig-shot-full{width:100%;border-radius:16px;border:1px solid rgba(25,25,25,.08);box-shadow:0 10px 30px rgba(0,0,0,.04);object-fit:contain}
+    .ig-actions{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:12px}
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="wrap hero-inner grid-2">
+      <div>
+        <h1 class="caps">Calories &amp; Protein Calculator</h1>
+        <div class="caps" style="opacity:.75;font-size:12px;margin:-4px 0 8px">For women in their 30's and up</div>
+        <p class="lead">Enter your details to calculate daily calories and protein specific to your fitness goals and lifestyle.</p>
+      </div>
+      <div class="card desktop-only" style="text-align:center">
+        <div class="caps" style="font-size:12px;opacity:.8;margin-bottom:8px">See inside the e-book</div>
+        <video class="media-9x16" controls preload="metadata" poster="cover.png" aria-label="Flip-through of Becoming Your Fittest Forever">
+          <source src="Slower%20Ebook%20Flip.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </header>
+
+  <!-- CALCULATOR -->
+  <section id="calculator" class="on-blush">
+    <div class="wrap">
+      <div class="card">
+        <h2 class="caps" style="margin-bottom:6px">Your Fit Forever Calculator</h2>
+        <p><strong>Enter your custom details below.</strong></p>
+
+        <form id="calcForm" class="form-grid form-2" novalidate>
+          <div>
+            <label for="age">Age</label>
+            <input id="age" type="number" min="14" max="90" placeholder="Years" required>
+          </div>
+
+          <div>
+            <label>Height</label>
+            <div class="inline">
+              <input id="heightFt" type="number" min="4" max="7" placeholder="Feet" required>
+              <input id="heightIn" type="number" min="0" max="11" placeholder="Inches" required>
+            </div>
+            <div class="note">Example: 5 feet and 6 inches</div>
+          </div>
+
+          <div>
+            <label for="weight">Weight</label>
+            <input id="weight" type="number" min="80" max="400" placeholder="Pounds" required>
+          </div>
+
+          <div>
+            <label for="activity">Activity Level</label>
+            <select id="activity" required>
+              <option value="">Select</option>
+              <option value="1.2">Sedentary — under 5,000 steps/day</option>
+              <option value="1.375">Lightly Active — 5k–8k steps/day, 1–3 light workouts/week</option>
+              <option value="1.55">Moderately Active — 8k–12k steps/day, 3–5 workouts/week</option>
+              <option value="1.725">Very Active — 12k+ steps/day, 6–7 intense workouts/week</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="goal">Fitness Goal</label>
+            <select id="goal" required>
+              <option value="">Select</option>
+              <option value="fatloss">Fat Loss</option>
+              <option value="maintain">Maintenance</option>
+              <option value="muscle">Muscle Gain</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="intensity">Training Intensity Level for Protein</label>
+            <select id="intensity">
+              <option value="1.0">Moderate — 1.0 g/lb</option>
+              <option value="1.1">Intense — 1.1 g/lb</option>
+              <option value="1.2">Very intense — 1.2 g/lb</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="email">Best email to send your results report</label>
+            <input id="email" type="email" placeholder="name@email.com">
+          </div>
+
+          <div>
+            <label for="goalWeight">Use goal weight for protein target (optional if you have significant amount of weight to lose)</label>
+            <input id="goalWeight" type="number" min="90" max="400" placeholder="Goal weight in pounds">
+          </div>
+
+          <div style="grid-column:1/-1;display:flex;gap:12px;flex-wrap:wrap">
+            <button type="submit" class="btn btn-dark">Calculate</button>
+            <button type="button" id="resetBtn" class="btn btn-cream">Reset</button>
+          </div>
+        </form>
+
+        <div id="results" class="results" style="margin-top:22px">
+          <h3 class="caps">Your Results</h3>
+          <div class="grid form-2" style="margin-top:12px">
+            <div class="result-box"><div class="caps" style="font-size:12px;opacity:.8">Your TDEE</div><div class="result-number" id="tdeeOut">—</div></div>
+            <div class="result-box"><div class="caps" style="font-size:12px;opacity:.8">Your fat loss calories</div><div class="result-number" id="fatlossOut">—</div></div>
+            <div class="result-box"><div class="caps" style="font-size:12px;opacity:.8">Your maintenance calories</div><div class="result-number" id="maintainOut">—</div></div>
+            <div class="result-box"><div class="caps" style="font-size:12px;opacity:.8">Your muscle gain calories</div><div class="result-number" id="muscleOut">—</div></div>
+            <div class="result-box" style="grid-column:1/-1"><div class="caps" style="font-size:12px;opacity:.8">Your daily protein</div><div class="result-number" id="proteinOut">—</div></div>
+          </div>
+          <a href="https://badpeachfitness.store/shop/3d377cf8-b293-42ba-91f2-593086a5a741" class="btn btn-dark" style="margin-top:16px">Turn My Results Into A Plan</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRIDGE -->
+  <section id="bridge" class="on-blush" style="padding-bottom:8px;">
+    <div class="wrap grid-2">
+      <div class="card">
+        <h2 class="caps">Now That You Know Your Numbers</h2>
+        <p>Most women stop here. Knowing calories and protein is step one. The change happens when those numbers become simple meals, strength sessions, recovery, and consistency.</p>
+        <p><strong>Becoming Your Fittest Forever</strong> gives you the no BS blueprint to use your numbers to build your dream physique, thrive holistically, and feel your best ever.</p>
+        <a href="https://badpeachfitness.store/shop/3d377cf8-b293-42ba-91f2-593086a5a741" class="btn btn-dark">Get the Ebook &amp; Meal Plan Generator</a>
+      </div>
+      <div class="card" style="text-align:center; margin-top:12px;">
+        <div class="caps" style="font-size:12px;opacity:.8;margin-bottom:8px">Sneak peek inside the e-book</div>
+        <video class="media-9x16" controls preload="metadata" poster="cover.png">
+          <source src="Slower%20Ebook%20Flip.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIGHT BLUSH SECTION -->
+  <section class="on-blush-light">
+    <div class="wrap grid-2">
+      <div>
+        <h2 class="caps">Your Numbers Are Just The Beginning</h2>
+        <p>Becoming Your Fittest Forever gives you the no BS blueprint to use your numbers to build your dream physique, thrive holistically, and feel your best ever.</p>
+      </div>
+      <div class="card" style="background:transparent;border-color:rgba(25,25,25,.18);">
+        <ul style="margin:0;padding-left:18px">
+          <li>185+ page fitness blueprint built for women in their 30's and up</li>
+          <li>Strength training plans for home or gym</li>
+          <li>Clarity for fat loss, maintenance, and muscle gain</li>
+          <li><strong>Lifetime access to the custom 7 day Meal Plan Generator</strong>
+            <ul style="margin-top:6px">
+              <li>New 7 day custom meal plans weekly</li>
+              <li>Serving sizes customized to your calories and protein numbers</li>
+              <li>Shopping list customized to your favorite grocery store's healthy brands</li>
+              <li>Pre-tracked for calories and protein (no tracking app needed)</li>
+              <li>Customize to 3 or 4 meals per day</li>
+              <li>Customize recipe repetition — lots or none</li>
+              <li>Balanced with macronutrients, rich in fiber &amp; micronutrients</li>
+              <li>Based on the Mediterranean diet</li>
+              <li>Fast, family-friendly recipes everyone loves</li>
+            </ul>
+          </li>
+        </ul>
+        <a href="https://badpeachfitness.store/shop/3d377cf8-b293-42ba-91f2-593086a5a741" class="btn btn-dark btn-xs" style="margin-top:12px">Get the Ebook &amp; Meal Plan Generator</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTAGRAM -->
+  <section class="ig-section">
+    <div class="wrap" style="text-align:center">
+      <h2 class="caps">Come Hang On Instagram</h2>
+      <div class="ig-container">
+        <img class="ig-shot-full" src="instagram-shot.jpg" alt="@bad.peach.fitness Instagram">
+        <div class="ig-actions">
+          <a class="btn btn-cream btn-xs" href="https://instagram.com/bad.peach.fitness" target="_blank">Follow On Instagram</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div class="grid form-2">
+        <div><strong class="caps">Bad Peach Fitness</strong></div>
+        <div style="text-align:right">
+          <a href="https://badpeachfitness.store/shop/3d377cf8-b293-42ba-91f2-593086a5a741" class="btn btn-dark btn-xs">Get the Ebook &amp; Meal Plan Generator</a>
+        </div>
+      </div>
+      <div class="
