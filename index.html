@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bad Peach – Calories & Protein Calculator</title>
+  <meta name="description" content="Calories and protein targets based on Laura’s book formulas.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* Brand */
+      --cream:#F7F3EF;
+      --blush:#EED6D3;
+      --black:#191919;
+
+      /* Sizing */
+      --radius:18px;
+      --gap:16px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--cream);color:var(--black);font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";}
+    a{color:inherit}
+
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:28px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr;gap:20px}}
+
+    /* Header */
+    .micro{font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.9;margin-bottom:6px;font-weight:600}
+    .h1{
+      font-family:Anton, Impact, sans-serif;
+      letter-spacing:.02em;
+      line-height:1;
+      margin:0 0 10px 0;
+      display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;
+    }
+    .nowrap{white-space:nowrap}
+    .title-stack{margin-bottom:6px}
+    .subtitle{
+      margin:0 0 18px 0;
+      font-size:18px;
+      color:var(--black);
+      opacity:.92;
+      max-width:50ch;
+    }
+    @media (max-width:600px){ .subtitle{font-size:16px} }
+
+    /* Two-line badge */
+    .badge{
+      display:inline-block;
+      border:1px solid var(--black);
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      line-height:1.05;
+      text-align:center;
+    }
+    .two-line{display:inline-block}
+    .two-line br{display:block}
+
+    /* Card shells */
+    .card{
+      background:#fff;border:1px solid #00000010;border-radius:var(--radius);
+      box-shadow:0 10px 30px rgba(0,0,0,.06);
+      overflow:hidden;
+    }
+    .card-head{padding:18px 18px 0 18px}
+    .card-body{padding:18px}
+    .card-footer{padding:14px 18px 18px 18px;border-top:1px solid #00000010}
+
+    /* Form */
+    label{display:block;font-size:13px;margin:0 0 6px 0;font-weight:600}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+    .row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--gap)}
+    @media (max-width:800px){.row,.row-3{grid-template-columns:1fr}}
+    input[type="number"], input[type="email"], select{
+      width:100%;height:48px;padding:12px 14px;border:1px solid #00000022;border-radius:12px;
+      background:#fff;font-size:15px;appearance:none;
+    }
+    select{
+      background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="12" viewBox="0 0 24 24" fill="none" stroke="%23191919" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+      background-repeat:no-repeat;background-position:right 12px center;padding-right:36px
+    }
+
+    .help{font-size:12px;opacity:.7;margin-top:6px}
+
+    /* Buttons */
+    .btn{
+      font-family:Anton, Impact, sans-serif;
+      letter-spacing:.175em;
+      text-transform:uppercase;
+      display:inline-flex;align-items:center;justify-content:center;
+      height:46px;padding:0 18px;border-radius:999px;border:1px solid var(--black);
+      background:var(--black);color:#fff;cursor:pointer;text-decoration:none;
+      font-size:13px; /* smaller everywhere */
+    }
+    .btn.ghost{background:#fff;color:var(--black)}
+    .btn:disabled{opacity:.45;cursor:not-allowed}
+
+    /* Header cluster */
+    .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;margin-bottom:24px}
+    @media (max-width:900px){.hero{grid-template-columns:1fr}}
+
+    .hero-media{position:relative;border-radius:var(--radius);overflow:hidden;background:#00000008}
+    .hero-media video, .hero-media img{display:block;width:100%;height:100%;object-fit:cover}
+    .hero-media .ig-mask{position:absolute;inset:0;pointer-events:auto}
+    .hero-media .ig-crop{
+      position:absolute;left:0;right:0;top:0;height:76%;
+      overflow:hidden
+    }
+    .hero-media .ig-crop a{display:block;width:100%;height:100%}
+    .hero-media .ig-crop img{width:100%;height:100%;object-fit:cover}
+
+    /* Section under title */
+    .kicker{margin:8px 0 14px 0;font-size:14px;opacity:.85}
+    .bullets{margin:0;padding-left:18px}
+    .bullets li{margin:8px 0}
+
+    /* Keep “Calories & Protein” tight above “Calculator” */
+    .title-stack .h1{margin-bottom:2px}
+
+    /* Calc label */
+    .calc-label{
+      font-family:Anton, Impact, sans-serif;letter-spacing:.02em;margin:0 0 8px 0;
+      font-size:20px;
+    }
+    @media (max-width:600px){ .calc-label{font-size:16px} }
+
+    /* Results */
+    .results{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap)}
+    @media (max-width:800px){.results{grid-template-columns:1fr}}
+    .stat{padding:14px;border:1px dashed #00000030;border-radius:14px}
+    .stat b{display:block;font-size:13px;margin-bottom:6px}
+    .stat .num{font-family:Anton, Impact, sans-serif;font-size:28px;letter-spacing:.02em}
+
+    /* Footer */
+    .footer{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:26px}
+    .footer .left{display:flex;gap:10px;align-items:center}
+    @media (max-width:700px){
+      .footer{flex-direction:column;align-items:flex-start}
+      .footer .left{order:2}
+      .footer .right{order:1;width:100%}
+      .footer .right .btn{width:auto;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div>
+        <div class="title-stack">
+          <div class="micro">BAD PEACH</div>
+          <h1 class="h1">
+            <span class="nowrap">Calories &amp; Protein</span>
+            <span class="nowrap">Calculator</span>
+          </h1>
+          <p class="subtitle">Discover the daily calories and protein specific for you.</p>
+          <div class="kicker">For women in their 30’s and up</div>
+        </div>
+
+        <ul class="bullets">
+          <li>How to hit your fitness goals for fat loss, maintenance, and muscle gain.</li>
+          <li>Lifetime access to the Bad Peach <b>7 Day</b> Meal Plan Generator.</li>
+          <li>Designed to be fast, simple, and accurate.</li>
+        </ul>
+
+        <!-- Force two-line display -->
+        <div class="badge">
+          <span class="two-line">YOUR FIT FOREVER<br>CALCULATOR</span>
+        </div>
+      </div>
+
+      <div class="hero-media card">
+        <div class="card-body" style="padding:0">
+          <!-- Video (kept) -->
+          <video id="heroVideo" playsinline muted controls preload="metadata" poster="poster.jpg">
+            <source src="your-video.mp4" type="video/mp4">
+          </video>
+        </div>
+
+        <!-- Clickable Instagram crop (links to your shop) -->
+        <div class="ig-mask">
+          <div class="ig-crop">
+            <a href="https://badpeachfitness.store/shop/3d377cf8-b293-42ba-91f2-593086a5a741" target="_blank" rel="noopener">
+              <img src="instagram-shot.jpg" alt="Shop the Bad Peach Meal Plan Generator">
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALCULATOR -->
+    <section class="grid">
+      <!-- Left: Form -->
+      <div class="card" id="calc-card">
+        <div class="card-head">
+          <p class="calc-label">Your Fit Forever Calculator</p>
+        </div>
+        <div class="card-body">
+          <form id="calcForm" novalidate>
+            <!-- Email required BEFORE calculate -->
+            <div class="row">
+              <div>
+                <label for="email">Best email to send your results report</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <input type="email" id="email" name="email" required placeholder="you@example.com"
+                         autocomplete="email" inputmode="email" style="flex:1" />
+                  <button type="button" class="btn ghost" id="useSavedEmailBtn" title="Auto-fill saved email">Use Saved</button>
+                </div>
+                <div class="help">Required to unlock Calculate. Tip: your browser may auto-fill this.</div>
+                <label style="display:flex;gap:8px;align-items:center;margin-top:8px;font-weight:500;font-size:12px">
+                  <input type="checkbox" id="rememberEmail" />
+                  Remember my email on this device
+                </label>
+              </div>
+              <div>
+                <label for="goalWeight">Goal Weight</label>
+                <input type="number" id="goalWeight" min="60" max="400" step="1" placeholder="e.g., 145" />
+              </div>
+            </div>
+
+            <div class="row-3" style="margin-top:16px">
+              <div>
+                <label for="age">Age</label>
+                <input type="number" id="age" min="16" max="90" step="1" placeholder="e.g., 41" />
+              </div>
+              <div>
+                <label for="height">Height (cm)</label>
+                <input type="number" id="height" min="120" max="210" step="1" placeholder="e.g., 165" />
+              </div>
+              <div>
+                <label for="weight">Weight (lb)</label>
+                <input type="number" id="weight" min="80" max="350" step="1" placeholder="e.g., 165" />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:16px">
+              <div>
+                <label for="activity">Activity Level</label>
+                <select id="activity" aria-label="Activity">
+                  <option value="sedentary">Sedentary – under 5k steps/day, no workouts, sit most of the day</option>
+                  <option value="light">Light – 6–8k steps/day, lifting 1–2x/week</option>
+                  <option value="moderate">Moderately active – 8k–12k steps/day, 3–5 moderate intensity workouts/week, moving about a lot of the day</option>
+                  <option value="active">Active – 10–12k steps/day, lifting 3–4x/week</option>
+                  <option value="very">Very active – 12k+ steps/day, 6–7 intense workouts/week, on feet all day long</option>
+                </select>
+              </div>
+              <div>
+                <label for="goal">Fitness Goal</label>
+                <select id="goal" aria-label="Goal">
+                  <option value="fatloss">Fat Loss</option>
+                  <option value="maintain">Maintenance</option>
+                  <option value="muscle">Muscle Gain</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+              <button id="calcBtn" class="btn" type="submit" disabled>Calculate</button>
+              <button id="resetBtn" class="btn ghost" type="button">Reset</button>
+              <a class="btn ghost" href="#book-details">View All Book Details</a>
+              <a class="btn ghost" href="https://instagram.com/bad.peach.fitness" target="_blank" rel="noopener">Follow on Instagram</a>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer">
+          <div class="help">We use your entries to estimate daily calories &amp; protein based on Laura’s methods.</div>
+        </div>
+      </div>
+
+      <!-- Right: Results -->
+      <div class="card" id="results-card" aria-live="polite">
+        <div class="card-head">
+          <p class="calc-label">Results</p>
+        </div>
+        <div class="card-body">
+          <div class="results">
+            <div class="stat">
+              <b>Your TDEE</b>
+              <div class="num" id="tdee">—</div>
+            </div>
+            <div class="stat">
+              <b>Your Protein Target</b>
+              <div class="num" id="protein">—</div>
+            </div>
+            <div class="stat">
+              <b>Your Fat Loss Calories</b>
+              <div class="num" id="cut">—</div>
+            </div>
+            <div class="stat">
+              <b>Your Maintenance Calories</b>
+              <div class="num" id="maintain">—</div>
+            </div>
+            <div class="stat">
+              <b>Your Muscle Gain Calories</b>
+              <div class="num" id="bulk">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="footer">
+            <div class="right">
+              <a class="btn" href="#generator">Use the Meal Plan Generator</a>
+            </div>
+            <div class="left">
+              <span class="help">Psst… meal plans match these numbers automatically.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Placeholder “book details” anchor -->
+    <section id="book-details" style="margin:40px 0">
+      <div class="card">
+        <div class="card-body">
+          <h2 style="margin:0 0 8px 0;font-family:Anton,Impact,sans-serif;letter-spacing:.02em">What’s Inside</h2>
+          <p style="margin:0">Polished details about the method here.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // --- Video fallback: try to autoplay muted; if blocked, leave controls
+    const v = document.getElementById('heroVideo');
+    if (v && v.play) { v.play().catch(()=>{/* ignore */}); }
+
+    // --- Form logic: Email required before Calculate
+    const form = document.getElementById('calcForm');
+    const calcBtn = document.getElementById('calcBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const email = document.getElementById('email');
+    const rememberEmail = document.getElementById('rememberEmail');
+    const useSavedEmailBtn = document.getElementById('useSavedEmailBtn');
+
+    function emailValid(){
+      return email.value.trim().length > 5 && email.checkValidity();
+    }
+    function toggleCalc(){
+      calcBtn.disabled = !emailValid();
+    }
+    email.addEventListener('input', toggleCalc);
+    toggleCalc();
+
+    // Pull saved email if available on load (and if the browser hasn't already auto-filled)
+    const saved = localStorage.getItem('bp_email');
+    if (saved && !email.value) {
+      // don't auto-insert silently; user can choose via the button
+      useSavedEmailBtn.style.display = 'inline-flex';
+    } else {
+      useSavedEmailBtn.style.display = 'inline-flex';
+    }
+
+    useSavedEmailBtn.addEventListener('click', ()=>{
+      const savedEmail = localStorage.getItem('bp_email');
+      if (savedEmail){
+        email.value = savedEmail;
+        email.dispatchEvent(new Event('input'));
+      } else {
+        // If nothing saved yet, prompt a gentle hint
+        alert('No saved email found yet. Check "Remember my email" after you Calculate to save it for next time.');
+      }
+    });
+
+    // --- Helpers
+    function activityFactor(val){
+      switch(val){
+        case 'sedentary': return 1.3;
+        case 'light': return 1.45;
+        case 'moderate': return 1.6;
+        case 'active': return 1.75;
+        case 'very': return 1.9;
+        default: return 1.5;
+      }
+    }
+
+    function toKg(lb){return lb/2.20462}
+
+    function bmrMifflin(sex='female', kg, cm, age){
+      const s = sex==='male'?5:-161;
+      return (10*kg)+(6.25*cm)-(5*age)+s;
+    }
+
+    function fmt(n){
+      if (!isFinite(n)) return '—';
+      return Math.round(n).toLocaleString();
+    }
+
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      if (!emailValid()) return;
+
+      const age = parseFloat(document.getElementById('age').value || '0');
+      const height = parseFloat(document.getElementById('height').value || '0');
+      const weightLb = parseFloat(document.getElementById('weight').value || '0');
+      const act = document.getElementById('activity').value;
+      const goal = document.getElementById('goal').value;
+
+      const kg = toKg(weightLb);
+      const bmr = bmrMifflin('female', kg, height, age);
+      const tdee = bmr * activityFactor(act);
+
+      // Example protein target — replace with your exact method if different
+      const protein = Math.max(110, Math.min(190, weightLb * 0.8)); // 0.8 g/lb
+
+      // Phase calories
+      const cut = tdee - 400;       // example cut
+      const maintain = tdee;        // maintenance
+      const bulk = tdee + 200;      // lean gain
+
+      document.getElementById('tdee').textContent = fmt(tdee);
+      document.getElementById('protein').textContent = fmt(protein) + ' g';
+      document.getElementById('cut').textContent = fmt(cut);
+      document.getElementById('maintain').textContent = fmt(maintain);
+      document.getElementById('bulk').textContent = fmt(bulk);
+
+      // Save email locally if chosen
+      if (rememberEmail.checked){
+        try{ localStorage.setItem('bp_email', email.value.trim()); }catch(e){}
+      }
+
+      // --- Optional: send to Beacons
+      const BEACONS_ENDPOINT = ""; // e.g., "https://beacons.ai/api/submit/your-form"
+      if (BEACONS_ENDPOINT){
+        const payload = {
+          email: email.value.trim(),
+          goalWeight: document.getElementById('goalWeight').value || null,
+          age, height, weightLb, activity: act, goal,
+          tdee: Math.round(tdee),
+          protein: Math.round(protein),
+          cut: Math.round(cut),
+          maintain: Math.round(maintain),
+          bulk: Math.round(bulk)
+        };
+        fetch(BEACONS_ENDPOINT, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(payload)
+        }).catch(()=>{ /* no-op */ });
+      }
+    });
+
+    resetBtn.addEventListener('click', ()=>{
+      form.reset();
+      document.getElementById('tdee').textContent='—';
+      document.getElementById('protein').textContent='—';
+      document.getElementById('cut').textContent='—';
+      document.getElementById('maintain').textContent='—';
+      document.getElementById('bulk').textContent='—';
+      toggleCalc();
+    });
+  </script>
+</body>
+</html>
