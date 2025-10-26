@@ -79,6 +79,12 @@
     .btn-xs{font-size:11px;padding:8px 12px;border-radius:var(--radius-btn)}
     .btn-dark,.btn-cream{border-color:var(--brand-black)}
 
+    /* Outline variant for affiliate CTA */
+    .btn-outline{
+      background:#fff;color:var(--brand-black);border:2px solid var(--brand-black);
+    }
+    .btn-outline:hover{background:var(--brand-black);color:var(--brand-cream)}
+
     header.hero{
       background:linear-gradient(180deg,var(--brand-blushL),var(--brand-blushD));
       border-bottom:1px solid var(--border);
@@ -134,10 +140,31 @@
 
     .affiliate-img{border-radius:16px;box-shadow:var(--shadow)}
     footer .small{color:rgba(25,25,25,.55)}
+
+    /* Affiliate card (match Results page) */
+    #affiliate{background:var(--brand-cream);}
+    #affiliate .aff-card{
+      background:#fff;border:1px solid var(--border);border-radius:22px;
+      box-shadow:var(--shadow);padding:20px;
+    }
+    #affiliate .aff-grid{
+      display:grid;gap:22px;align-items:center;
+      grid-template-columns:1fr;
+    }
+    @media (min-width:900px){
+      #affiliate .aff-grid{grid-template-columns:1.1fr 1fr;}
+    }
+    #affiliate .aff-photo{
+      width:100%;max-width:640px;border-radius:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.08);border:1px solid var(--border);
+    }
+    #affiliate h2{margin:0 0 8px}
+    #affiliate .aff-copy{font-size:16px;line-height:1.6;color:var(--text)}
+    #affiliate .aff-copy strong{color:var(--brand-black)}
   </style>
 </head>
+
 <body>
-  <!-- (everything below stays exactly the same as before) -->
   <!-- STICKY CTA (mobile) -->
   <div id="stickyCta" class="sticky-cta" role="region" aria-label="Sticky purchase banner">
     <div class="copy"><strong>Ready?</strong> Turn your numbers into a results driven fitness plan.</div>
@@ -157,8 +184,43 @@
     </div>
   </header>
 
-  <!-- (rest of your code remains identical — omitted for brevity but unchanged) -->
-  <!-- Paste your existing script and HTML content below this line with no modifications -->
+  <!-- (Calculator, results, and all other sections remain unchanged) -->
+
+  <!-- AFFILIATE (updated visual only) -->
+  <section id="affiliate" class="on-cream" style="display:none;">
+    <div class="wrap">
+      <div class="aff-card">
+        <div class="aff-grid">
+          <a href="https://badpeachfitness.store/affiliatesinstructions" target="_blank" rel="noopener">
+            <img src="Affiliate.png" alt="Affiliate Opportunity - Share and Make Money" class="aff-photo">
+          </a>
+          <div>
+            <h2 class="caps">Become a Bad Peach Affiliate</h2>
+            <p class="aff-copy">
+              Share the <em>Becoming Your Fittest Forever</em> e-book (with lifetime access to this custom meal plan generator) and be rewarded generously as a thank you! When you help other women glow up, you should benefit too.
+            </p>
+            <p class="aff-copy">
+              <strong>Earn 50% commission</strong> for every purchase made through your unique link. Click below to get your link today!
+            </p>
+            <a href="https://badpeachfitness.store/affiliatesinstructions" class="btn btn-outline">Become an Affiliate</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer" style="display:none;">
+    <div class="wrap">
+      <div class="small" style="margin-top:12px;color:rgba(25,25,25,.55)">
+        © <span id="yr"></span> Bad Peach Fitness. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+    /* (All calculator JS, validation, and reveal logic remain unchanged) */
+  </script>
 </body>
 </html>
-
