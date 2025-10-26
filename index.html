@@ -6,106 +6,128 @@
   <title>Bad Peach – Calories & Protein Calculator</title>
   <meta name="description" content="See your daily calories and protein targets, then turn them into simple meals and strength sessions that fit your life." />
 
-  <!-- Fonts -->
+  <!-- Fonts (left as-is; headings use Times, body uses system sans to match other pages) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
 
   <style>
+    /* === Brand system to match meal-plan/results === */
     :root{
-      --black:#191919;
-      --blush:#ebcac2;
-      --blush-light:#f7e9e6;
-      --cream:#fffefc;
+      --brand-cream:#fffefc;
+      --brand-blushL:#FFEFEA;
+      --brand-blushD:#ebcac2;
+      --brand-black:#191919;
+
+      --paper:#FFFFFF;
+      --text:#333333;
+      --muted:#6B6B6B;
+      --border:#EDE7E2;
+      --shadow:0 14px 32px rgba(0,0,0,.10);
+
+      --ok:#1a7f37;
       --error:#c62828;
-      --ok:#1b7f42;
+      --focus:rgba(199,143,122,.18); /* warm focus */
+      --radius-card:22px;
+      --radius-btn:6px;
     }
 
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:var(--cream);color:var(--black)}
-    body{font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.65;font-size:17px}
+    html,body{margin:0;padding:0;background:var(--brand-cream);color:var(--text)}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;font-size:17px}
 
-    /* Headings */
-    h1,h2,h3,h4{font-family:"Times New Roman",Times,serif;letter-spacing:.02em}
+    /* Headings match other pages */
+    h1,h2,h3,h4{font-family:"Times New Roman",Times,serif;letter-spacing:.02em;color:var(--brand-black)}
     .caps{text-transform:uppercase;letter-spacing:.06em}
 
-    /* Fluid sizes (smaller on phones to avoid overflow) */
     h1{font-size:clamp(22px, 6.6vw, 40px); line-height:1.1; margin:0 0 6px}
-    h2{font-size:32px}
-    @media (max-width:680px){
-      h2{font-size:24px}
-      .caps{letter-spacing:.045em}
-    }
-
-    /* Keep calculator title on one line; scale so it always fits */
+    h2{font-size:clamp(20px,3.2vw,32px); margin:0 0 8px}
     .one-line{ white-space:nowrap; }
     h2.one-line{ font-size:clamp(14px, 4.2vw, 28px); line-height:1.05; }
 
+    /* Layout */
     .wrap{max-width:1100px;margin:0 auto;padding:24px}
     .grid{display:grid;gap:24px}
     .grid-2{grid-template-columns:1fr}
     @media (min-width:980px){.grid-2{grid-template-columns:1.15fr .85fr}}
 
-    .card{background:#fff;border:1px solid rgba(25,25,25,.08);border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.04)}
-    .on-blush{background:var(--blush)}
-    .on-cream{background:var(--cream);color:var(--black)}
-    .on-blush-light{background:var(--blush-light)}
-    .note{font-size:13px;opacity:.85}
+    /* Cards */
+    .card{
+      background:var(--paper);
+      border:1px solid var(--border);
+      border-radius:var(--radius-card);
+      padding:20px;
+      box-shadow:var(--shadow);
+    }
 
-    /* Buttons */
+    /* Section backgrounds (kept semantically same) */
+    .on-blush{background:linear-gradient(180deg, rgba(233,191,175,.35), rgba(233,191,175,.16))}
+    .on-cream{background:var(--brand-cream);color:var(--brand-black)}
+    .on-blush-light{background:linear-gradient(180deg, rgba(233,191,175,.22), rgba(233,191,175,.10))}
+
+    .note{font-size:13px;color:var(--muted)}
+
+    /* Buttons — black outline w/ subtle radius; hover fills black */
     .btn{
-      display:inline-block;border:none;cursor:pointer;text-decoration:none;
-      padding:10px 16px;border-radius:8px;font-weight:600;
-      font-family:"Inter",system-ui,sans-serif;font-size:12px;letter-spacing:.06em;
-      text-transform:uppercase;transition:transform .04s ease, box-shadow .2s ease;white-space:nowrap
+      display:inline-block;cursor:pointer;text-decoration:none;
+      padding:12px 16px;border-radius:var(--radius-btn);font-weight:800;
+      font-family:inherit;font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+      transition:transform .04s ease, filter .15s ease, background .15s ease, color .15s ease, border-color .15s ease;
+      border:2px solid var(--brand-black); background:#fff; color:var(--brand-black);
     }
-    .btn-dark{background:var(--black);color:var(--cream);box-shadow:0 2px 0 rgba(0,0,0,.22)}
-    .btn-cream{background:var(--cream);color:var(--black);box-shadow:0 2px 0 rgba(0,0,0,.10)}
-    .btn:hover{transform:translateY(-1px)}
-    .btn-xs{font-size:11px;padding:8px 12px;border-radius:6px}
+    .btn:hover{background:var(--brand-black);color:#fff}
+    .btn:active{transform:translateY(1px)}
+    .btn-xs{font-size:11px;padding:8px 12px;border-radius:var(--radius-btn)}
+    /* Keep legacy class names working (no markup change) */
+    .btn-dark{border-color:var(--brand-black)}
+    .btn-cream{border-color:var(--brand-black)}
 
-    header.hero{background:linear-gradient(0deg, rgba(235,202,194,.22), rgba(235,202,194,.22)), var(--cream);border-bottom:1px solid rgba(25,25,25,.08)}
-    .hero-inner{display:grid;gap:24px;align-items:center}
-    .hero-subline{text-align:left;font-size:11px;margin:-2px 0 8px;opacity:.75}
-
-    /* Lead line: keep to one line on phones */
-    p.lead{font-size:clamp(16px, 3.2vw, 19px)}
-    @media (max-width:680px){
-      p.lead{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    /* Hero — blush gradient to match meal-plan header */
+    header.hero{
+      background:linear-gradient(180deg,var(--brand-blushL),var(--brand-blushD));
+      border-bottom:1px solid var(--border);
+      color:var(--brand-black);
     }
+    .hero-inner{display:grid;gap:12px;align-items:center}
+    .brand-kicker{font-size:.85rem;letter-spacing:.25em;color:var(--brand-black);opacity:.95}
+    .hero-subline{font-size:11px;margin:-2px 0 8px;opacity:.75}
+    p.lead{font-size:clamp(16px, 3.2vw, 19px);margin:.3rem 0 0}
 
     /* Form */
     .form-grid{display:grid;gap:14px}
     .form-2{grid-template-columns:1fr}
     @media (min-width:780px){.form-2{grid-template-columns:1fr 1fr}}
-    label{font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:12px}
-    .optional-note{font-weight:400;text-transform:none;letter-spacing:0;font-family:inherit;opacity:.9}
+    label{font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-size:12px;color:var(--brand-black)}
+    .optional-note{font-weight:400;text-transform:none;letter-spacing:0;opacity:.9}
 
     input,select{
-      width:100%;height:48px;padding:12px;border:1px solid rgba(25,25,25,.2);border-radius:10px;background:#fff;font-size:16px;line-height:24px;
+      width:100%;height:48px;padding:12px;border:1px solid var(--border);border-radius:14px;background:#fff;font-size:16px;line-height:24px;
       outline:none; transition: border-color .2s ease, box-shadow .2s ease;
     }
-    input:focus, select:focus{border-color:#9c6; box-shadow:0 0 0 3px rgba(153,204,102,.15)}
+    input:focus, select:focus{border-color:#C78F7A; box-shadow:0 0 0 4px var(--focus)}
     .inline{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     select.placeholder{ color: rgba(25,25,25,.5); }
 
-    /* Validation nudges */
+    /* Validation nudges (unchanged behavior, refined colors) */
     .field{position:relative}
     .hint{display:none;font-size:12px;color:var(--error);margin-top:6px}
-    .field.error input, .field.error select{border-color:var(--error)}
+    .field.error input, .field.error select{border-color:var(--error); box-shadow:0 0 0 3px rgba(198,40,40,.12)}
     .field.error .hint{display:block}
-    .field.ok input, .field.ok select{border-color:var(--ok)}
+    .field.ok input, .field.ok select{border-color:var(--ok); box-shadow:0 0 0 3px rgba(26,127,55,.12)}
     .tiny-check{display:none;color:var(--ok);font-size:12px;margin-top:6px}
     .field.ok .tiny-check{display:inline-flex;align-items:center;gap:6px}
 
     /* Results */
     .results{display:none}
-    .result-box{background:#fff;border:2px solid var(--blush);border-radius:14px;padding:18px}
-    .result-number{font-size:30px;font-weight:800;font-family:"Inter",system-ui,sans-serif}
+    .result-box{
+      background:#fff;border:2px solid var(--brand-blushD);border-radius:14px;padding:18px;
+      box-shadow:0 6px 18px rgba(0,0,0,.05)
+    }
+    .result-number{font-size:30px;font-weight:800;font-family:inherit;color:var(--brand-black)}
     .result-cta{margin-top:10px}
 
-    /* Media (lower video only — header video removed) */
-    .media-9x16{aspect-ratio:9/16;width:100%;max-width:420px;object-fit:cover;background:#fff;margin-inline:auto}
+    /* Media */
+    .media-9x16{aspect-ratio:9/16;width:100%;max-width:420px;object-fit:cover;background:#fff;margin-inline:auto;border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow)}
 
     /* Sticky bottom CTA (mobile) */
     .sticky-cta{
@@ -119,12 +141,8 @@
     .sticky-cta .x{background:transparent;border:none;color:#fff;opacity:.8;font-size:18px;line-height:1;cursor:pointer}
     @media (min-width:681px){ .sticky-cta{display:none !important} }
 
-    /* Left-align the Beacons form on desktop */
-    #beacons-signup-wrapper{max-width:100%;}
-    @media (min-width:980px){
-      #beacons-signup-wrapper{max-width:560px; margin-left:0; margin-right:auto;}
-    }
-
+    /* Utility: center blocks on brand cream with soft edges */
+    .affiliate-img{border-radius:16px;box-shadow:var(--shadow)}
     footer .small{color:rgba(25,25,25,.55)}
   </style>
 </head>
@@ -144,10 +162,9 @@
         <div class="brand-kicker caps">BAD PEACH</div>
         <h1 class="caps"><span>Calories&nbsp;&amp;&nbsp;Protein</span> Calculator</h1>
         <div class="caps hero-subline">For women in their mid-30's and up</div>
-        <!-- ✅ updated line -->
         <p class="lead">Discover your daily calories and protein amount.</p>
       </div>
-      <!-- (desktop header video removed earlier) -->
+      <!-- (desktop header media intentionally omitted) -->
     </div>
   </header>
 
@@ -155,10 +172,9 @@
   <section id="calculator" class="on-blush">
     <div class="wrap">
       <div class="card">
-        <!-- H2 stays on one line and scales -->
         <h2 class="caps one-line">YOUR FIT FOREVER CALCULATOR</h2>
 
-        <!-- Beacons Email Form (ONLY thing visible on first load) -->
+        <!-- Beacons Email Form -->
         <div id="beacons-signup-wrapper" style="margin-bottom:18px;">
           <script>
             (function () {
@@ -173,7 +189,7 @@
           <div id="b20d2ccb-0967-43cc-bc9b-d844063e992b"></div>
         </div>
 
-        <!-- 🔓 ENTIRE LANDING PAGE (hidden until email submitted) -->
+        <!-- 🔓 Full content (revealed after email) -->
         <div id="fullLanding" style="display:none;">
 
           <p><strong>Enter your custom details below.</strong></p>
@@ -303,7 +319,7 @@
             </div>
 
             <p style="margin-top:14px;font-style:italic">These are your numbers. The plan makes them work.</p>
-            <a href="https://badpeachfitness.store/shop/3d377cf8-b293-42ba-91f2-593086a5a741" class="btn btn-dark">Get Fit Blueprint + Meal Plan Generator</a>
+            <a href="https://badpeachfitness.store/shop/3d377cf8-b293-42ba-91f2-593086a5a741" class="btn">Get Fit Blueprint + Meal Plan Generator</a>
           </div>
 
         </div><!-- /#fullLanding -->
@@ -315,7 +331,7 @@
   <section class="on-blush-light" id="moreSections" style="display:none;">
     <div class="wrap grid-2">
       <!-- LEFT: Content card (cream inside) -->
-      <div class="card" style="background:var(--cream);border-color:rgba(25,25,25,.18);">
+      <div class="card" style="background:var(--brand-cream);">
         <h2 class="caps" style="margin-top:0">Your Numbers Are Just The Beginning</h2>
         <ul style="margin:0;padding-left:18px">
           <li>185+ pages fitness blueprint <strong>designed</strong> for women in their mid-30's and up.</li>
@@ -323,10 +339,10 @@
           <li>How to hit your fitness goals for fat loss, maintenance, and muscle gain.</li>
           <li><strong>Lifetime access to the one-of-a-kind Bad Peach Meal Plan Generator.</strong></li>
         </ul>
-        <a href="https://badpeachfitness.store/shop/3d377cf8-b293-42ba-91f2-593086a5a741" class="btn btn-dark btn-xs" style="margin-top:12px">Get Fit Blueprint + Meal Plan Generator</a>
+        <a href="https://badpeachfitness.store/shop/3d377cf8-b293-42ba-91f2-593086a5a741" class="btn btn-xs" style="margin-top:12px">Get Fit Blueprint + Meal Plan Generator</a>
       </div>
 
-      <!-- RIGHT: Peek video (fits on all screens) -->
+      <!-- RIGHT: Peek video -->
       <div class="card" style="text-align:center; margin-top:12px;">
         <div class="caps" style="font-size:12px;opacity:.8;margin-bottom:8px">Sneak peek inside the e-book</div>
         <div class="media-9x16" id="previewShell2">
@@ -343,13 +359,13 @@
     <div class="wrap" style="text-align:center">
       <h2 class="caps">Affiliate Opportunity</h2>
       <a href="https://badpeachfitness.store/affiliatesinstructions" target="_blank" rel="noopener">
-        <img src="Affiliate.png" class="affiliate-img" alt="Affiliate Opportunity - Share and Make Money" style="width:100%;max-width:560px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08)">
+        <img src="Affiliate.png" class="affiliate-img" alt="Affiliate Opportunity - Share and Make Money" style="width:100%;max-width:560px;">
       </a>
       <p style="max-width:740px;margin:18px auto;font-size:16px;line-height:1.6">
         Help other women discover their midlife glow-up and get paid for it! Earn a <strong>50% commission</strong> for every purchase made through your affiliate link.
       </p>
       <a href="https://badpeachfitness.store/affiliatesinstructions"
-         class="btn btn-dark" target="_blank" rel="noopener">Become An Affiliate</a>
+         class="btn" target="_blank" rel="noopener">Become An Affiliate</a>
     </div>
   </section>
 
@@ -359,9 +375,9 @@
       <h2 class="caps">Come Hang On Instagram</h2>
       <div class="ig-container" style="width:320px;max-width:100%;margin:0 auto">
         <a href="https://badpeachfitness.store/shop/3d377cf8-b293-42ba-91f2-593086a5a741" target="_blank" rel="noopener">
-          <img class="ig-shot-full" src="instagram-shot.jpg" alt="@bad.peach.fitness Instagram" style="width:100%;border-radius:16px;border:1px solid rgba(25,25,25,.08);box-shadow:0 10px 30px rgba(0,0,0,.04);object-fit:contain">
+          <img class="ig-shot-full" src="instagram-shot.jpg" alt="@bad.peach.fitness Instagram" style="width:100%;border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);object-fit:contain">
         </a>
-        <div class="ig-actions">
+        <div class="ig-actions" style="margin-top:10px">
           <a class="btn btn-cream btn-xs" href="https://instagram.com/bad.peach.fitness" target="_blank" rel="noopener">Follow On Instagram</a>
         </div>
       </div>
@@ -375,6 +391,7 @@
     </div>
   </footer>
 
+  <!-- ==== Scripts (UNCHANGED functionality) ==== -->
   <script>
     // Auto year
     document.getElementById('yr').textContent = new Date().getFullYear();
@@ -455,7 +472,7 @@
     }
     window.addEventListener('resize', ()=>{ if(sticky.style.display==='block') padBodyForSticky(); });
 
-    /* ----------------- Calculator Logic ----------------- */
+    /* ----------------- Calculator Logic (UNCHANGED) ----------------- */
     const form = document.getElementById('calcForm');
     const resultsEl = document.getElementById('results');
     const tdeeOut = document.getElementById('tdeeOut');
@@ -467,7 +484,6 @@
     const resetBtn = document.getElementById('resetBtn');
     const intensitySelect = document.getElementById('intensity');
 
-    // Inline validation helpers
     function setState(wrap, ok){
       wrap.classList.remove('error','ok');
       wrap.classList.add(ok ? 'ok' : 'error');
@@ -504,11 +520,9 @@
       }
     });
 
-    // Calculate
     form.addEventListener('submit', function(e){
       e.preventDefault();
 
-      // Validate quickly
       const order = ['age','heightFt','heightIn','weight','activity','goal'];
       let firstInvalid = null;
       order.forEach(k => {
@@ -528,10 +542,10 @@
       const activity = parseFloat(fields.activity.el.value);
       const goalWeight = parseFloat(document.getElementById('goalWeight').value);
 
-      // intensity mapping
-      const intensitySel = (intensitySelect && intensitySelect.value) ? intensitySelect.value : 'Moderate';
+      const intensitySelectEl = document.getElementById('intensity');
+      const intensitySel = (intensitySelectEl && intensitySelectEl.value) ? intensitySelectEl.value : 'Moderate';
       const intensityMap = { Light: 1.0, Moderate: 1.1, Intense: 1.2 };
-      const intensity = intensityMap[intensitySel] ?? 1.1; // default Moderate
+      const intensity = intensityMap[intensitySel] ?? 1.1;
 
       const heightIn = (ft * 12) + inch;
 
@@ -543,7 +557,6 @@
       const maintain = tdee;
       const muscle = tdee * 1.15;
 
-      // Protein calculation: use goal weight if provided, else current weight
       let baseWeight = weightLb;
       let sourceLabel = 'current weight';
       if(!isNaN(goalWeight) && goalWeight > 0){
@@ -565,18 +578,44 @@
       resultsEl.scrollIntoView({behavior:'smooth', block:'start'});
     });
 
-    // Reset
-    resetBtn.addEventListener('click', function(){
+    const resetBtnEl = document.getElementById('resetBtn');
+    resetBtnEl.addEventListener('click', function(){
+      const form = document.getElementById('calcForm');
       form.reset();
       document.querySelectorAll('.field').forEach(f => f.classList.remove('ok','error'));
+      const resultsEl = document.getElementById('results');
+      const tdeeOut = document.getElementById('tdeeOut');
+      const fatlossOut = document.getElementById('fatlossOut');
+      const maintainOut = document.getElementById('maintainOut');
+      const muscleOut = document.getElementById('muscleOut');
+      const proteinOut = document.getElementById('proteinOut');
+      const proteinNote = document.getElementById('proteinNote');
       resultsEl.style.display='none';
       tdeeOut.textContent = fatlossOut.textContent = maintainOut.textContent = muscleOut.textContent = proteinOut.textContent = '—';
       proteinNote.textContent = '';
+      const sticky = document.getElementById('stickyCta');
+      function hide(el){ if(el) el.style.display='none'; }
       hide(sticky);
       sticky.dataset.closed = '';
       document.body.style.paddingBottom = '';
       window.scrollTo({top:0, behavior:'smooth'});
     });
+
+    // Sticky helpers (original references preserved)
+    function maybeShowSticky(){
+      const sticky = document.getElementById('stickyCta');
+      function show(el){ if(el) el.style.display='flex'; }
+      function padBodyForSticky(){
+        try{
+          const h = sticky.offsetHeight || 0;
+          document.body.style.paddingBottom = (h + 8) + 'px';
+        }catch(e){}
+      }
+      if(window.matchMedia('(max-width:680px)').matches && sticky.dataset.closed !== '1'){
+        show(sticky);
+        padBodyForSticky();
+      }
+    }
 
     /* ---------- Lower-section video autoplay-on-scroll ---------- */
     function setupAutoplayOnScroll(videoEl, shellEl){
