@@ -468,6 +468,34 @@
     // Optional URL unlock (unchanged)
     const usp=new URLSearchParams(location.search);
     if(usp.get('unlock')==='1' || location.hash==='#unlock'){ revealAll(); }
+
+// --- Fix for email form reloading issue ---
+function persistUnlock() {
+  localStorage.setItem('badpeach_calc_unlocked', '1');
+}
+
+function checkPersistedUnlock() {
+  if (localStorage.getItem('badpeach_calc_unlocked') === '1') {
+    revealAll();
+  }
+}
+
+// Run this check on load
+checkPersistedUnlock();
+
+// Modify revealAll() so it remembers the unlock
+function revealAll(){
+  hide(beaconsWrap);
+  show(fullLanding);
+  show(moreSections);
+  show(affiliate);
+  show(igSection);
+  show(footer);
+  persistUnlock(); // ✅ Save unlock state
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+    
   </script>
 </body>
 </html>
