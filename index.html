@@ -197,20 +197,22 @@
       <div class="card">
         <h2 class="caps one-line">YOUR FIT FOREVER CALCULATOR</h2>
 
-        <!-- Beacons Email Form -->
-        <div id="beacons-signup-wrapper" style="margin-bottom:18px;">
-          <script>
-            (function () {
-              var s=document.createElement("script");
-              var t=Math.floor(new Date().getTime()/120000);
-              s.type="module";
-              s.async=1;
-              s.src=`https://beacons.ai/embeds/emailForm.js?v=${t}&b=badpeachfitness&f=b20d2ccb-0967-43cc-bc9b-d844063e992b`;
-              document.body.appendChild(s);
-            })();
-          </script>
-           <div id="b20d2ccb-0967-43cc-bc9b-d844063e992b"></div>
-        </div>
+      <!-- Beacons Email Form -->
+<div id="beacons-signup-wrapper" style="margin-bottom:18px;">
+  <div id="b20d2ccb-0967-43cc-bc9b-d844063e992b"></div>
+  <script>
+    (function () {
+      const s = document.createElement("script");
+      const t = Math.floor(Date.now() / 120000);
+      s.type = "module";
+      s.async = true;
+      s.src = `https://beacons.ai/embeds/emailForm.js?v=${t}&b=badpeachfitness&f=b20d2ccb-0967-43cc-bc9b-d844063e992b`;
+      const wrapper = document.getElementById("beacons-signup-wrapper");
+      wrapper.appendChild(s);
+    })();
+  </script>
+</div>
+
 
         <!-- 🔓 Full content (revealed after email) -->
         <div id="fullLanding" style="display:none;">
