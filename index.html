@@ -214,6 +214,7 @@
 
         <!-- 🔓 Full content (revealed after email) -->
         <div id="fullLanding" style="display:none;">
+
           <p><strong>Enter your custom details below.</strong></p>
 
           <form id="calcForm" class="form-grid form-2" novalidate>
@@ -414,7 +415,7 @@
     // Auto year
     document.getElementById('yr').textContent = new Date().getFullYear();
 
-    // Minimal unlock logic (ONLY change added to fix reveal after email submit)
+    // Minimal unlock logic + PERSISTENCE FIX
     const beaconsWrap = document.getElementById('beacons-signup-wrapper');
     const fullLanding = document.getElementById('fullLanding');
     const moreSections= document.getElementById('moreSections');
@@ -426,13 +427,26 @@
     function show(el){ if(el) el.style.display = (el.id === 'stickyCta' ? 'flex' : 'block'); }
     function hide(el){ if(el) el.style.display = 'none'; }
 
-    function revealAll(){
+    // ✅ Persist unlock across refreshes / form reloads
+    function persistUnlock(){
+      try { localStorage.setItem('badpeach_calc_unlocked', '1'); } catch(e){}
+    }
+    function checkPersistedUnlock(){
+      try {
+        if(localStorage.getItem('badpeach_calc_unlocked') === '1'){
+          revealAll(/*fromPersist*/true);
+        }
+      } catch(e){}
+    }
+
+    function revealAll(fromPersist){
       hide(beaconsWrap);
       show(fullLanding);
       show(moreSections);
       show(affiliate);
       show(igSection);
       show(footer);
+      if(!fromPersist) persistUnlock(); // only set on actual reveal events
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -465,37 +479,140 @@
       obs.observe(embedRoot, { childList:true, subtree:true });
     }
 
-    // Optional URL unlock (unchanged)
+    // Optional URL unlock
     const usp=new URLSearchParams(location.search);
     if(usp.get('unlock')==='1' || location.hash==='#unlock'){ revealAll(); }
 
-// --- Fix for email form reloading issue ---
-function persistUnlock() {
-  localStorage.setItem('badpeach_calc_unlocked', '1');
-}
+    // 🔁 Check persisted state on load
+    checkPersistedUnlock();
 
-function checkPersistedUnlock() {
-  if (localStorage.getItem('badpeach_calc_unlocked') === '1') {
-    revealAll();
-  }
-}
+    /* ----------------- Calculator Logic (UNCHANGED) ----------------- */
+    const form = document.getElementById('calcForm');
+    const resultsEl = document.getElementById('results');
+    const tdeeOut = document.getElementById('tdeeOut');
+    const fatlossOut = document.getElementById('fatlossOut');
+    const maintainOut = document.getElementById('maintainOut');
+    const muscleOut = document.getElementById('muscleOut');
+    const proteinOut = document.getElementById('proteinOut');
+    const proteinNote = document.getElementById('proteinNote');
+    const resetBtn = document.getElementById('resetBtn');
+    const intensitySelect = document.getElementById('intensity');
 
-// Run this check on load
-checkPersistedUnlock();
+    function inRange(val, min, max){ return !isNaN(val) && val >= min && val <= max; }
+    function setState(wrap, ok){
+      wrap.classList.remove('error','ok');
+      wrap.classList.add(ok ? 'ok' : 'error');
+    }
+    const fields = {
+      age: { el: document.getElementById('age'), min:14, max:90, wrap: document.querySelector('[data-name="age"]') },
+      heightFt: { el: document.getElementById('heightFt'), min:4, max:7 },
+      heightIn: { el: document.getElementById('heightIn'), min:0, max:11, wrap: document.querySelector('[data-name="height"]') },
+      weight: { el: document.getElementById('weight'), min:80, max:400, wrap: document.querySelector('[data-name="weight"]') },
+      activity: { el: document.getElementById('activity'), wrap: document.querySelector('[data-name="activity"]') },
+      goal: { el: document.getElementById('goal'), wrap: document.querySelector('[data-name="goal"]') }
+    };
+    function validateField(key){
+      const f = fields[key];
+      if(!f) return true;
+      if(f.el.tagName === 'SELECT'){
+        const valid = !!f.el.value;
+        setState(f.wrap, valid);
+        return valid;
+      }else{
+        const v = parseFloat(f.el.value);
+        const min = f.min ?? -Infinity, max = f.max ?? Infinity;
+        const valid = inRange(v, min, max);
+        if(f.wrap) setState(f.wrap, valid);
+        else setState(f.el.parentElement, valid);
+        return valid;
+      }
+    }
+    Object.keys(fields).forEach(k => {
+      fields[k].el.addEventListener('blur', () => validateField(k));
+      fields[k].el.addEventListener('input', () => validateField(k));
+      if(fields[k].el.tagName === 'SELECT'){
+        fields[k].el.addEventListener('change', () => validateField(k));
+      }
+    });
 
-// Modify revealAll() so it remembers the unlock
-function revealAll(){
-  hide(beaconsWrap);
-  show(fullLanding);
-  show(moreSections);
-  show(affiliate);
-  show(igSection);
-  show(footer);
-  persistUnlock(); // ✅ Save unlock state
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
 
-    
+      const order = ['age','heightFt','heightIn','weight','activity','goal'];
+      let firstInvalid = null;
+      order.forEach(k => {
+        const ok = validateField(k);
+        if(!ok && !firstInvalid) firstInvalid = fields[k].el;
+      });
+      if(firstInvalid){
+        firstInvalid.focus({preventScroll:false});
+        firstInvalid.scrollIntoView({behavior:'smooth',block:'center'});
+        return;
+      }
+
+      const age = parseFloat(fields.age.el.value);
+      const ft  = parseFloat(fields.heightFt.el.value);
+      const inch= parseFloat(fields.heightIn.el.value);
+      const weightLb = parseFloat(fields.weight.el.value);
+      const activity = parseFloat(fields.activity.el.value);
+      const goalWeight = parseFloat(document.getElementById('goalWeight').value);
+
+      const intensitySelectEl = document.getElementById('intensity');
+      const intensitySel = (intensitySelectEl && intensitySelectEl.value) ? intensitySelectEl.value : 'Moderate';
+      const intensityMap = { Light: 1.0, Moderate: 1.1, Intense: 1.2 };
+      const intensity = intensityMap[intensitySel] ?? 1.1;
+
+      const heightIn = (ft * 12) + inch;
+
+      // Harris-Benedict for women
+      const bmr = 655 + (4.35 * weightLb) + (4.7 * heightIn) - (4.7 * age);
+      const tdee = bmr * activity;
+
+      const fatloss = tdee * 0.85;
+      const maintain = tdee;
+      const muscle = tdee * 1.15;
+
+      let baseWeight = weightLb;
+      let sourceLabel = 'current weight';
+      if(!isNaN(goalWeight) && goalWeight > 0){
+        baseWeight = goalWeight;
+        sourceLabel = 'goal weight';
+      }
+      const protein = intensity * baseWeight;
+
+      tdeeOut.textContent = Math.round(tdee).toLocaleString();
+      fatlossOut.textContent = Math.round(fatloss).toLocaleString();
+      maintainOut.textContent = Math.round(maintain).toLocaleString();
+      muscleOut.textContent = Math.round(muscle).toLocaleString();
+      proteinOut.textContent = Math.round(protein) + ' g';
+
+      proteinNote.textContent = `Based on your ${sourceLabel} × ${intensity.toFixed(1)} (Intensity: ${intensitySel}).`;
+
+      resultsEl.style.display='block';
+      resultsEl.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+
+    // Sticky helpers (original references preserved)
+    const sticky = document.getElementById('stickyCta');
+    const stickyClose = sticky.querySelector('.x');
+    function padBodyForSticky(){
+      try{
+        const h = sticky.offsetHeight || 0;
+        document.body.style.paddingBottom = (h + 8) + 'px';
+      }catch(e){}
+    }
+    stickyClose.addEventListener('click', () => {
+      sticky.dataset.closed = '1';
+      hide(sticky);
+      document.body.style.paddingBottom = '';
+    });
+    function maybeShowSticky(){
+      if(window.matchMedia('(max-width:680px)').matches && sticky.dataset.closed !== '1'){
+        show(sticky);
+        padBodyForSticky();
+      }
+    }
+    window.addEventListener('resize', ()=>{ if(sticky.style.display==='block') padBodyForSticky(); });
   </script>
 </body>
 </html>
