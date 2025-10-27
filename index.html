@@ -6,7 +6,7 @@
   <title>Bad Peach – Calories & Protein Calculator</title>
   <meta name="description" content="See your daily calories and protein targets, then turn them into simple meals and strength sessions that fit your life." />
 
-  <!-- Fonts (headings use Times, body uses system sans to match other pages) -->
+  <!-- Fonts (left as-is; headings use Times, body uses system sans to match other pages) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
@@ -60,14 +60,14 @@
       box-shadow:var(--shadow);
     }
 
-    /* Section backgrounds */
+    /* Section backgrounds (kept semantically same) */
     .on-blush{background:linear-gradient(180deg, rgba(233,191,175,.35), rgba(233,191,175,.16))}
     .on-cream{background:var(--brand-cream);color:var(--brand-black)}
     .on-blush-light{background:linear-gradient(180deg, rgba(233,191,175,.22), rgba(233,191,175,.10))}
 
     .note{font-size:13px;color:var(--muted)}
 
-    /* Buttons */
+    /* Buttons: dark blush base w/ black text; hover black + cream */
     .btn{
       display:inline-block;cursor:pointer;text-decoration:none;
       padding:12px 16px;border-radius:var(--radius-btn);font-weight:800;
@@ -80,6 +80,7 @@
     .btn:hover{background:var(--brand-black);color:var(--brand-cream)}
     .btn:active{transform:translateY(1px)}
     .btn-xs{font-size:11px;padding:8px 12px;border-radius:var(--radius-btn)}
+    /* legacy class names kept */
     .btn-dark{border-color:var(--brand-black)}
     .btn-cream{border-color:var(--brand-black)}
 
@@ -147,8 +148,7 @@
     footer .small{color:rgba(25,25,25,.55)}
 
     /* Affiliate card styles to match Results page */
-    /* Affiliate section uses the same gradient as header (as requested) */
-    #affiliate{background:linear-gradient(180deg,var(--brand-blushL),var(--brand-blushD));}
+    #affiliate{background:var(--brand-cream);}
     #affiliate .aff-card{
       background:#fff;border:1px solid var(--border);border-radius:22px;
       box-shadow:var(--shadow);padding:20px;
@@ -369,6 +369,7 @@
       <div class="card" style="text-align:center; margin-top:12px;">
         <div class="caps" style="font-size:12px;opacity:.8;margin-bottom:8px">Sneak peek inside the e-book</div>
         <div class="media-9x16" id="previewShell2">
+          <!-- FIX: added autoplay so it starts when revealed -->
           <video id="previewVid2" playsinline muted loop preload="metadata" autoplay poster="cover.png" style="width:100%;height:100%;object-fit:cover;border-radius:16px">
             <source src="Slower E-book Flip.mp4" type="video/mp4">
           </video>
@@ -394,22 +395,20 @@
               Share the <em>Becoming Your Fittest Forever</em> system (with lifetime access to the custom meal plan generator) and be rewarded generously as a thank you! When you help other women glow up, you should benefit too.
             </p>
             <p class="aff-copy"><strong>Earn 50% commission</strong> for every purchase made through your unique link. Click below to get your link today!</p>
-            <a href="https://badpeachfitness.store/affiliates" class="btn">Become an Affiliate</a>
+            <a href="https://badpeachfitness.store/affiliatesinstructions" class="btn">Become an Affiliate</a>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- INSTAGRAM -->
+  <!-- INSTAGRAM (restored) -->
   <section id="igSection" class="on-cream" style="display:none;">
     <div class="wrap">
       <div class="card" style="text-align:center;">
-        <h2 class="caps" style="margin-top:0">Come Hang on Instagram</h2>
-        <img src="InstagramFeed.png" alt="Bad Peach Fitness Instagram Feed" style="max-width:900px;width:100%;border-radius:16px;box-shadow:var(--shadow);border:1px solid var(--border);margin-top:10px;">
-        <div style="margin-top:14px">
-          <a href="https://instagram.com/bad.peach.fitness" target="_blank" rel="noopener" class="btn">Follow @bad.peach.fitness</a>
-        </div>
+        <h2 class="caps" style="margin-top:0">Follow Along on Instagram</h2>
+        <p style="margin:8px 0 16px">Daily tips, strength training demos, and real-life Bombshell energy.</p>
+        <a href="https://instagram.com/bad.peach.fitness" target="_blank" rel="noopener" class="btn">Follow @bad.peach.fitness</a>
       </div>
     </div>
   </section>
@@ -428,7 +427,7 @@
     // Auto year
     document.getElementById('yr').textContent = new Date().getFullYear();
 
-    // Unlock logic + persistence
+    // Minimal unlock logic + PERSISTENCE FIX
     const beaconsWrap = document.getElementById('beacons-signup-wrapper');
     const fullLanding = document.getElementById('fullLanding');
     const moreSections= document.getElementById('moreSections');
@@ -440,6 +439,7 @@
     function show(el){ if(el) el.style.display = (el.id === 'stickyCta' ? 'flex' : 'block'); }
     function hide(el){ if(el) el.style.display = 'none'; }
 
+    // ✅ Persist unlock across refreshes / form reloads
     function persistUnlock(){
       try { localStorage.setItem('badpeach_calc_unlocked', '1'); } catch(e){}
     }
@@ -458,35 +458,33 @@
       show(affiliate);
       show(igSection);
       show(footer);
-      if(!fromPersist) persistUnlock();
-      // try to start the preview video once visible
-      try { const v=document.getElementById('previewVid2'); if(v) v.play().catch(()=>{}); } catch(e){}
+      if(!fromPersist) persistUnlock(); // only set on actual reveal events
+      // Attempt to start preview video when revealed (no UI change)
+      try {
+        const v = document.getElementById('previewVid2');
+        if (v) { v.play().catch(()=>{}); }
+      } catch(e){}
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 1) Primary: Listen for Beacons postMessage events (handles multiple payload shapes)
+    // Listen for Beacons postMessage events
     window.addEventListener('message', (event) => {
       const d = event.data;
       if(!d) return;
-      // Beacons sends different shapes; check a few common keys/strings
       if (
         d.type === 'BEACONS_FORM_SUBMITTED' ||
-        d.type === 'BEACONS_EMAIL_SUBMITTED' ||
         d.event === 'formSubmitted' ||
-        d.event === 'emailSubmitted' ||
-        d.beaconsFormSubmitted === true ||
-        d.status === 'success' ||
-        (typeof d === 'string' && d.toLowerCase().includes('beacons') && d.toLowerCase().includes('submitted'))
+        d.beaconsFormSubmitted === true
       ){
         revealAll();
       }
     });
 
-    // 2) Fallback: observe success copy in the embed container
+    // Fallback: observe success text inside embed root
     if(embedRoot){
       const successMatchers = [
-        'perfect!', 'thanks', 'thank you', 'check your email', 'check your inbox',
-        'confirmation', 'success', 'you’re in', 'you are in', 'submitted'
+        'perfect!', 'thanks', 'thank you', 'check your email', 'confirmation',
+        'success', 'you’re in', 'you are in', 'submitted'
       ];
       const obs = new MutationObserver(()=>{
         const txt=(embedRoot.textContent || '').toLowerCase();
@@ -502,10 +500,10 @@
     const usp=new URLSearchParams(location.search);
     if(usp.get('unlock')==='1' || location.hash==='#unlock'){ revealAll(); }
 
-    // Persisted unlock on load
+    // 🔁 Check persisted state on load
     checkPersistedUnlock();
 
-    /* ----------------- Calculator Logic (unchanged) ----------------- */
+    /* ----------------- Calculator Logic (UNCHANGED) ----------------- */
     const form = document.getElementById('calcForm');
     const resultsEl = document.getElementById('results');
     const tdeeOut = document.getElementById('tdeeOut');
