@@ -412,6 +412,48 @@
     // Auto year
     document.getElementById('yr').textContent = new Date().getFullYear();
 
+    // ======== Option A: PDF param unlock ========
+    (function(){
+      // Buyer goes to your meal plan generator
+      const BUYER_TARGET = 'https://bad-peach-meal-plan-2.vercel.app/meal-plan';
+      // Non-buyer goes to your sales funnel (keeps the existing systeme.io link used elsewhere)
+      const NON_BUYER_TARGET = 'https://badpeachfitness.systeme.io/bff';
+
+      function getUrlParam(name){
+        try { return new URL(location.href).searchParams.get(name); } catch(e){ return null; }
+      }
+
+      function setCookie(name, value, days){
+        try {
+          const maxAge = 60 * 60 * 24 * days;
+          document.cookie = name + '=' + encodeURIComponent(value) + '; path=/; max-age=' + maxAge + '; SameSite=Lax';
+        } catch(e){}
+      }
+
+      function hasCookie(name){
+        return document.cookie.split(';').some(c => c.trim().startsWith(name + '='));
+      }
+
+      // If landed from PDF link with ?pdf=... set cookie for 30 days
+      const pdfParam = getUrlParam('pdf');
+      if (pdfParam){
+        setCookie('badpeach_purchased', '1', 30);
+      }
+
+      // Decide which target to use
+      const isBuyer = hasCookie('badpeach_purchased');
+      const target = isBuyer ? BUYER_TARGET : NON_BUYER_TARGET;
+
+      // Update CTAs inside the results area only
+      try {
+        document.querySelectorAll('#results .result-cta a, #results > a.btn, #results a').forEach(a => {
+          a.setAttribute('href', target);
+          a.setAttribute('target', '_self');
+        });
+      } catch(e){}
+    })();
+    // ======== end unlock snippet ========
+
     // Minimal unlock logic + PERSISTENCE FIX
     const beaconsWrap = document.getElementById('beacons-signup-wrapper');
     const fullLanding = document.getElementById('fullLanding');
