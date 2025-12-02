@@ -412,46 +412,62 @@
     // Auto year
     document.getElementById('yr').textContent = new Date().getFullYear();
 
-    // ======== Option A: PDF param unlock ========
-    (function(){
-      // Buyer goes to your meal plan generator
-      const BUYER_TARGET = 'https://bad-peach-meal-plan-2.vercel.app/meal-plan';
-      // Non-buyer goes to your sales funnel (keeps the existing systeme.io link used elsewhere)
-      const NON_BUYER_TARGET = 'https://badpeachfitness.systeme.io/bff';
+   // ======== Option A: PDF param unlock ========
+(function(){
+  const BUYER_TARGET = 'https://bad-peach-meal-plan-2.vercel.app/meal-plan';
 
-      function getUrlParam(name){
-        try { return new URL(location.href).searchParams.get(name); } catch(e){ return null; }
-      }
+  // Default non-buyer target
+  const NON_BUYER_TARGET = 'https://badpeachfitness.com/bff';
 
-      function setCookie(name, value, days){
-        try {
-          const maxAge = 60 * 60 * 24 * days;
-          document.cookie = name + '=' + encodeURIComponent(value) + '; path=/; max-age=' + maxAge + '; SameSite=Lax';
-        } catch(e){}
-      }
+  // All links that count as non-buyer sources
+  const NON_BUYER_SOURCES = [
+    'https://badpeachfitness.systeme.io/bff',
+    'https://badpeachfitness.com/bff',
+    'https://www.badpeachfitness.com/calculator',
+    'https://badpeachfitness.systeme.io/calculator'
+  ];
 
-      function hasCookie(name){
-        return document.cookie.split(';').some(c => c.trim().startsWith(name + '='));
-      }
+  function getUrlParam(name){
+    try { return new URL(location.href).searchParams.get(name); } catch(e){ return null; }
+  }
 
-      // If landed from PDF link with ?pdf=... set cookie for 30 days
-      const pdfParam = getUrlParam('pdf');
-      if (pdfParam){
-        setCookie('badpeach_purchased', '1', 30);
-      }
+  function setCookie(name, value, days){
+    try {
+      const maxAge = 60 * 60 * 24 * days;
+      document.cookie = name + '=' + encodeURIComponent(value) + '; path=/; max-age=' + maxAge + '; SameSite=Lax';
+    } catch(e){}
+  }
 
-      // Decide which target to use
-      const isBuyer = hasCookie('badpeach_purchased');
-      const target = isBuyer ? BUYER_TARGET : NON_BUYER_TARGET;
+  function hasCookie(name){
+    return document.cookie.split(';').some(c => c.trim().startsWith(name + '='));
+  }
 
-      // Update CTAs inside the results area only
-      try {
-        document.querySelectorAll('#results .result-cta a, #results > a.btn, #results a').forEach(a => {
-          a.setAttribute('href', target);
-          a.setAttribute('target', '_self');
-        });
-      } catch(e){}
-    })();
+  // Check if user came from any non-buyer funnel/calculator link
+  const ref = document.referrer || '';
+  const cameFromNonBuyerLink = NON_BUYER_SOURCES.some(url => ref.startsWith(url));
+
+  // Buyer cookie from PDF link
+  const pdfParam = getUrlParam('pdf');
+  if (pdfParam){
+    setCookie('badpeach_purchased', '1', 30);
+  }
+
+  // Buyer logic overrides referrer logic
+  const isBuyer = hasCookie('badpeach_purchased');
+
+  // Final target
+  const target = isBuyer ? BUYER_TARGET : NON_BUYER_TARGET;
+
+  // Update CTAs
+  try {
+    document.querySelectorAll('#results .result-cta a, #results > a.btn, #results a')
+      .forEach(a => {
+        a.setAttribute('href', target);
+        a.setAttribute('target', '_self');
+      });
+  } catch(e){}
+})();
+
     // ======== end unlock snippet ========
 
     // Minimal unlock logic + PERSISTENCE FIX
