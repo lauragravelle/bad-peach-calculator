@@ -343,10 +343,10 @@
       <div class="card" style="background:var(--brand-cream);">
         <h2 class="caps" style="margin-top:0">Your Numbers Are Just The Beginning</h2>
         <ul style="margin:0;padding-left:18px">
-          <li>185+ pages fitness blueprint <strong>designed</strong> for women in their mid-30's and up.</li>
+          <li>185+ pages fitness blueprint <strong>designed</strong> for women in their 30's and up.</li>
           <li>Progressive overload strength training plans + exercise demos and personal training tips for maximum results.</li>
           <li>How to hit your fitness goals for fat loss, maintenance, and muscle gain.</li>
-          <li><strong>Lifetime access to the one-of-a-kind Bad Peach Meal Plan Generator.</strong></li>
+          <li><strong>Access to the one-of-a-kind Bad Peach Meal Plan Generator.</strong></li>
         </ul>
         <a href="https://www.badpeachfitness.com/bff" class="btn btn-xs" style="margin-top:12px">Get Fit Blueprint + Meal Plan Generator</a>
       </div>
@@ -424,7 +424,7 @@
     'https://badpeachfitness.systeme.io/bff',
     'https://badpeachfitness.com/bff',
     'https://www.badpeachfitness.com/calculator',
-    'https://badpeachfitness.systeme.io/calculator'
+    'https://badpeachfitness.systeme.io/calculator',
     'https://bad-peach-calculator.vercel.app'
   ];
 
@@ -456,17 +456,9 @@
   // Buyer logic overrides referrer logic
   const isBuyer = hasCookie('badpeach_purchased');
 
-  // Final target
+  // Final target - store globally so we can use it after calculation
   const target = isBuyer ? BUYER_TARGET : NON_BUYER_TARGET;
-
-  // Update CTAs
-  try {
-    document.querySelectorAll('#results .result-cta a, #results > a.btn, #results a')
-      .forEach(a => {
-        a.setAttribute('href', target);
-        a.setAttribute('target', '_self');
-      });
-  } catch(e){}
+  window.badpeachTarget = target;
 })();
 
     // ======== end unlock snippet ========
@@ -531,7 +523,7 @@
     if(embedRoot){
       const successMatchers = [
         'perfect!', 'thanks', 'thank you', 'check your email', 'check your inbox',
-        'confirmation', 'success', 'you’re in', 'you are in', 'submitted'
+        'confirmation', 'success', 'you're in', 'you are in', 'submitted'
       ];
       const obs = new MutationObserver(()=>{
         const txt=(embedRoot.textContent || '').toLowerCase();
@@ -550,7 +542,7 @@
     // 🔁 Check persisted state on load
     checkPersistedUnlock();
 
-    /* ----------------- Calculator Logic (UNCHANGED) ----------------- */
+    /* ----------------- Calculator Logic ----------------- */
     const form = document.getElementById('calcForm');
     const resultsEl = document.getElementById('results');
     const tdeeOut = document.getElementById('tdeeOut');
@@ -579,134 +571,4 @@
       const f = fields[key];
       if(!f) return true;
       if(f.el.tagName === 'SELECT'){
-        const valid = !!f.el.value;
-        setState(f.wrap, valid);
-        return valid;
-      }else{
-        const v = parseFloat(f.el.value);
-        const min = f.min ?? -Infinity, max = f.max ?? Infinity;
-        const valid = inRange(v, min, max);
-        if(f.wrap) setState(f.wrap, valid);
-        else setState(f.el.parentElement, valid);
-        return valid;
-      }
-    }
-    Object.keys(fields).forEach(k => {
-      fields[k].el.addEventListener('blur', () => validateField(k));
-      fields[k].el.addEventListener('input', () => validateField(k));
-      if(fields[k].el.tagName === 'SELECT'){
-        fields[k].el.addEventListener('change', () => validateField(k));
-      }
-    });
-
-    form.addEventListener('submit', function(e){
-      e.preventDefault();
-
-      const order = ['age','heightFt','heightIn','weight','activity','goal'];
-      let firstInvalid = null;
-      order.forEach(k => {
-        const ok = validateField(k);
-        if(!ok && !firstInvalid) firstInvalid = fields[k].el;
-      });
-      if(firstInvalid){
-        firstInvalid.focus({preventScroll:false});
-        firstInvalid.scrollIntoView({behavior:'smooth',block:'center'});
-        return;
-      }
-
-      const age = parseFloat(fields.age.el.value);
-      const ft  = parseFloat(fields.heightFt.el.value);
-      const inch= parseFloat(fields.heightIn.el.value);
-      const weightLb = parseFloat(fields.weight.el.value);
-      const activity = parseFloat(fields.activity.el.value);
-      const goalWeight = parseFloat(document.getElementById('goalWeight').value);
-
-      const intensitySelectEl = document.getElementById('intensity');
-      const intensitySel = (intensitySelectEl && intensitySelectEl.value) ? intensitySelectEl.value : 'Moderate';
-      const intensityMap = { Light: 1.0, Moderate: 1.1, Intense: 1.2 };
-      const intensity = intensityMap[intensitySel] ?? 1.1;
-
-      const heightIn = (ft * 12) + inch;
-
-      // Harris-Benedict for women
-      const bmr = 655 + (4.35 * weightLb) + (4.7 * heightIn) - (4.7 * age);
-      const tdee = bmr * activity;
-
-      const fatloss = tdee * 0.85;
-      const maintain = tdee;
-      const muscle = tdee * 1.15;
-
-      let baseWeight = weightLb;
-      let sourceLabel = 'current weight';
-      if(!isNaN(goalWeight) && goalWeight > 0){
-        baseWeight = goalWeight;
-        sourceLabel = 'goal weight';
-      }
-      const protein = intensity * baseWeight;
-
-      tdeeOut.textContent = Math.round(tdee).toLocaleString();
-      fatlossOut.textContent = Math.round(fatloss).toLocaleString();
-      maintainOut.textContent = Math.round(maintain).toLocaleString();
-      muscleOut.textContent = Math.round(muscle).toLocaleString();
-      proteinOut.textContent = Math.round(protein) + ' g';
-
-      proteinNote.textContent = `Based on your ${sourceLabel} × ${intensity.toFixed(1)} (Intensity: ${intensitySel}).`;
-
-      resultsEl.style.display='block';
-      resultsEl.scrollIntoView({behavior:'smooth', block:'start'});
-    });
-
-    /* ==== RESET BUTTON (added) ==== */
-    resetBtn.addEventListener('click', () => {
-      form.reset();
-
-      // Clear validation states
-      Object.keys(fields).forEach(k => {
-        const wrap = fields[k].wrap || fields[k].el.parentElement;
-        if (wrap) wrap.classList.remove('ok','error');
-      });
-
-      // Ensure selects return to placeholder
-      try {
-        document.getElementById('activity').value = '';
-        document.getElementById('goal').value = '';
-        const intensityEl = document.getElementById('intensity');
-        if (intensityEl) intensityEl.value = '';
-      } catch(e){}
-
-      // Clear results and hide section
-      tdeeOut.textContent = '—';
-      fatlossOut.textContent = '—';
-      maintainOut.textContent = '—';
-      muscleOut.textContent = '—';
-      proteinOut.textContent = '—';
-      proteinNote.textContent = '';
-      resultsEl.style.display = 'none';
-
-      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-
-    // Sticky helpers (original references preserved)
-    const sticky = document.getElementById('stickyCta');
-    const stickyClose = sticky.querySelector('.x');
-    function padBodyForSticky(){
-      try{
-        const h = sticky.offsetHeight || 0;
-        document.body.style.paddingBottom = (h + 8) + 'px';
-      }catch(e){}
-    }
-    stickyClose.addEventListener('click', () => {
-      sticky.dataset.closed = '1';
-      hide(sticky);
-      document.body.style.paddingBottom = '';
-    });
-    function maybeShowSticky(){
-      if(window.matchMedia('(max-width:680px)').matches && sticky.dataset.closed !== '1'){
-        show(sticky);
-        padBodyForSticky();
-      }
-    }
-    window.addEventListener('resize', ()=>{ if(sticky.style.display==='block') padBodyForSticky(); });
-  </script>
-</body>
-</html>
+        const vali
