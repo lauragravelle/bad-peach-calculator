@@ -174,7 +174,7 @@
   <!-- STICKY CTA (mobile) -->
   <div id="stickyCta" class="sticky-cta" role="region" aria-label="Sticky purchase banner">
     <div class="copy"><strong>Ready?</strong> Turn your numbers into a results driven fitness plan.</div>
-    <a href="https://www.badpeachfitness.com/bff" class="btn btn-cream btn-xs">Get Fit Blueprint + Meal Plan Generator</a>
+    <a href="https://badpeachfitness.systeme.io/bff" class="btn btn-cream btn-xs">Get Fit Blueprint + Meal Plan Generator</a>
     <button class="x" aria-label="Close">×</button>
   </div>
 
@@ -297,7 +297,7 @@
                 <div class="caps" style="font-size:12px;opacity:.8">Your fat loss calories</div>
                 <div class="result-number" id="fatlossOut">—</div>
                 <div class="result-cta">
-                  <a href="https://www.badpeachfitness.com/bff" class="btn btn-dark btn-xs">Get your fat loss plan</a>
+                  <a href="https://badpeachfitness.systeme.io/bff" class="btn btn-dark btn-xs">Get your fat loss plan</a>
                 </div>
               </div>
 
@@ -305,7 +305,7 @@
                 <div class="caps" style="font-size:12px;opacity:.8">Your maintenance calories</div>
                 <div class="result-number" id="maintainOut">—</div>
                 <div class="result-cta">
-                  <a href="https://www.badpeachfitness.com/bff" class="btn btn-dark btn-xs">Get your maintenance plan</a>
+                  <a href="https://badpeachfitness.systeme.io/bff" class="btn btn-dark btn-xs">Get your maintenance plan</a>
                 </div>
               </div>
 
@@ -313,7 +313,7 @@
                 <div class="caps" style="font-size:12px;opacity:.8">Your muscle gain calories</div>
                 <div class="result-number" id="muscleOut">—</div>
                 <div class="result-cta">
-                  <a href="https://www.badpeachfitness.com/bff" class="btn btn-dark btn-xs">Get your muscle gain plan</a>
+                  <a href="https://badpeachfitness.systeme.io/bff" class="btn btn-dark btn-xs">Get your muscle gain plan</a>
                 </div>
               </div>
 
@@ -322,13 +322,13 @@
                 <div class="result-number" id="proteinOut">—</div>
                 <div class="note" id="proteinNote"></div>
                 <div class="result-cta">
-                  <a href="https://www.badpeachfitness.com/bff" class="btn btn-dark btn-xs">See protein-friendly meals</a>
+                  <a href="https://badpeachfitness.systeme.io/bff" class="btn btn-dark btn-xs">See protein-friendly meals</a>
                 </div>
               </div>
             </div>
 
             <p style="margin-top:14px;font-style:italic">These are your numbers. The plan makes them work.</p>
-            <a href="https://www.badpeachfitness.com/bff" class="btn">Get Fit Blueprint + Meal Plan Generator</a>
+            <a href="https://badpeachfitness.systeme.io/bff" class="btn">Get Fit Blueprint + Meal Plan Generator</a>
           </div>
 
         </div><!-- /#fullLanding -->
@@ -343,12 +343,12 @@
       <div class="card" style="background:var(--brand-cream);">
         <h2 class="caps" style="margin-top:0">Your Numbers Are Just The Beginning</h2>
         <ul style="margin:0;padding-left:18px">
-          <li>185+ pages fitness blueprint <strong>designed</strong> for women in their 30's and up.</li>
+          <li>185+ pages fitness blueprint <strong>designed</strong> for women in their mid-30's and up.</li>
           <li>Progressive overload strength training plans + exercise demos and personal training tips for maximum results.</li>
           <li>How to hit your fitness goals for fat loss, maintenance, and muscle gain.</li>
-          <li><strong>Access to the one-of-a-kind Bad Peach Meal Plan Generator.</strong></li>
+          <li><strong>Lifetime access to the one-of-a-kind Bad Peach Meal Plan Generator.</strong></li>
         </ul>
-        <a href="https://www.badpeachfitness.com/bff" class="btn btn-xs" style="margin-top:12px">Get Fit Blueprint + Meal Plan Generator</a>
+        <a href="https://badpeachfitness.systeme.io/bff" class="btn btn-xs" style="margin-top:12px">Get Fit Blueprint + Meal Plan Generator</a>
       </div>
 
       <!-- RIGHT: Peek video -->
@@ -370,7 +370,7 @@
       <div class="aff-card">
         <div class="aff-grid">
           <!-- Left: image -->
-          <a href="https://www.badpeachfitness.com/affiliate" target="_blank" rel="noopener">
+          <a href="https://badpeachfitness.systeme.io/affiliate" target="_blank" rel="noopener">
             <img src="Affiliate.png" class="aff-photo" alt="Affiliate Opportunity - Share and Make Money">
           </a>
 
@@ -378,10 +378,10 @@
           <div>
             <h2 class="caps">Become An Affiliate</h2>
             <p class="aff-copy">
-              Share the <em>Becoming Your Fittest Forever</em> system and be rewarded generously as a thank you! When you help other women glow up, you should benefit too.
+              Share the <em>Becoming Your Fittest Forever</em> system (with lifetime access to the custom meal plan generator) and be rewarded generously as a thank you! When you help other women glow up, you should benefit too.
             </p>
             <p class="aff-copy"><strong>Earn 50% commission</strong> for every purchase made through your unique link. Click below to get your link today!</p>
-            <a href="https://www.badpeachfitness.com/affiliate" class="btn">Become an Affiliate</a>
+            <a href="https://badpeachfitness.systeme.io/affiliate" class="btn">Become an Affiliate</a>
           </div>
         </div>
       </div>
@@ -412,63 +412,46 @@
     // Auto year
     document.getElementById('yr').textContent = new Date().getFullYear();
 
-   // ======== Option A: PDF param unlock ========
-(function(){
-  const BUYER_TARGET = 'https://www.bad-peach-meal-plan-2.vercel.app/meal-plan';
+    // ======== Option A: PDF param unlock ========
+    (function(){
+      // Buyer goes to your meal plan generator
+      const BUYER_TARGET = 'https://bad-peach-meal-plan-2.vercel.app/meal-plan';
+      // Non-buyer goes to your sales funnel (keeps the existing systeme.io link used elsewhere)
+      const NON_BUYER_TARGET = 'https://badpeachfitness.systeme.io/bff';
 
-  // Default non-buyer target
-  const NON_BUYER_TARGET = 'https://www.badpeachfitness.com/bff';
+      function getUrlParam(name){
+        try { return new URL(location.href).searchParams.get(name); } catch(e){ return null; }
+      }
 
-  // All links that count as non-buyer sources
-  const NON_BUYER_SOURCES = [
-    'https://www.badpeachfitness.systeme.io/bff',
-    'https://www.badpeachfitness.com/bff',
-    'https://www.badpeachfitness.com/calculator',
-    'https://www.badpeachfitness.systeme.io/calculator'
-    'https://www.bad-peach-calculator.vercel.app'
-  ];
+      function setCookie(name, value, days){
+        try {
+          const maxAge = 60 * 60 * 24 * days;
+          document.cookie = name + '=' + encodeURIComponent(value) + '; path=/; max-age=' + maxAge + '; SameSite=Lax';
+        } catch(e){}
+      }
 
-  function getUrlParam(name){
-    try { return new URL(location.href).searchParams.get(name); } catch(e){ return null; }
-  }
+      function hasCookie(name){
+        return document.cookie.split(';').some(c => c.trim().startsWith(name + '='));
+      }
 
-  function setCookie(name, value, days){
-    try {
-      const maxAge = 60 * 60 * 24 * days;
-      document.cookie = name + '=' + encodeURIComponent(value) + '; path=/; max-age=' + maxAge + '; SameSite=Lax';
-    } catch(e){}
-  }
+      // If landed from PDF link with ?pdf=... set cookie for 30 days
+      const pdfParam = getUrlParam('pdf');
+      if (pdfParam){
+        setCookie('badpeach_purchased', '1', 30);
+      }
 
-  function hasCookie(name){
-    return document.cookie.split(';').some(c => c.trim().startsWith(name + '='));
-  }
+      // Decide which target to use
+      const isBuyer = hasCookie('badpeach_purchased');
+      const target = isBuyer ? BUYER_TARGET : NON_BUYER_TARGET;
 
-  // Check if user came from any non-buyer funnel/calculator link
-  const ref = document.referrer || '';
-  const cameFromNonBuyerLink = NON_BUYER_SOURCES.some(url => ref.startsWith(url));
-
-  // Buyer cookie from PDF link
-  const pdfParam = getUrlParam('pdf');
-  if (pdfParam){
-    setCookie('badpeach_purchased', '1', 30);
-  }
-
-  // Buyer logic overrides referrer logic
-  const isBuyer = hasCookie('badpeach_purchased');
-
-  // Final target
-  const target = isBuyer ? BUYER_TARGET : NON_BUYER_TARGET;
-
-  // Update CTAs
-  try {
-    document.querySelectorAll('#results .result-cta a, #results > a.btn, #results a')
-      .forEach(a => {
-        a.setAttribute('href', target);
-        a.setAttribute('target', '_self');
-      });
-  } catch(e){}
-})();
-
+      // Update CTAs inside the results area only
+      try {
+        document.querySelectorAll('#results .result-cta a, #results > a.btn, #results a').forEach(a => {
+          a.setAttribute('href', target);
+          a.setAttribute('target', '_self');
+        });
+      } catch(e){}
+    })();
     // ======== end unlock snippet ========
 
     // Minimal unlock logic + PERSISTENCE FIX
@@ -657,63 +640,56 @@
     });
 
     /* ==== RESET BUTTON (added) ==== */
-resetBtn.addEventListener('click', () => {
-  form.reset();
+    resetBtn.addEventListener('click', () => {
+      form.reset();
 
-  // Clear validation states
-  Object.keys(fields).forEach(k => {
-    const wrap = fields[k].wrap || fields[k].el.parentElement;
-    if (wrap) {
-      wrap.classList.remove('ok');
-      wrap.classList.remove('error');
+      // Clear validation states
+      Object.keys(fields).forEach(k => {
+        const wrap = fields[k].wrap || fields[k].el.parentElement;
+        if (wrap) wrap.classList.remove('ok','error');
+      });
+
+      // Ensure selects return to placeholder
+      try {
+        document.getElementById('activity').value = '';
+        document.getElementById('goal').value = '';
+        const intensityEl = document.getElementById('intensity');
+        if (intensityEl) intensityEl.value = '';
+      } catch(e){}
+
+      // Clear results and hide section
+      tdeeOut.textContent = '—';
+      fatlossOut.textContent = '—';
+      maintainOut.textContent = '—';
+      muscleOut.textContent = '—';
+      proteinOut.textContent = '—';
+      proteinNote.textContent = '';
+      resultsEl.style.display = 'none';
+
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Sticky helpers (original references preserved)
+    const sticky = document.getElementById('stickyCta');
+    const stickyClose = sticky.querySelector('.x');
+    function padBodyForSticky(){
+      try{
+        const h = sticky.offsetHeight || 0;
+        document.body.style.paddingBottom = (h + 8) + 'px';
+      }catch(e){}
     }
-  });
-
-  // Ensure selects return to placeholder
-  try {
-    document.getElementById('activity').value = '';
-    document.getElementById('goal').value = '';
-    const intensityEl = document.getElementById('intensity');
-    if (intensityEl) intensityEl.value = '';
-  } catch(e){}
-
-  // Clear results fully
-  tdeeOut.textContent = '';
-  fatlossOut.textContent = '';
-  maintainOut.textContent = '';
-  muscleOut.textContent = '';
-  proteinOut.textContent = '';
-  proteinNote.textContent = '';
-
-  // Hide results section
-  resultsEl.style.display = 'none';
-
-  // Scroll back to top of form
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-/* ==== Sticky helpers (original references preserved) ==== */
-const sticky = document.getElementById('stickyCta');
-const stickyClose = sticky.querySelector('.x');
-function padBodyForSticky(){
-  try{
-    const h = sticky.offsetHeight || 0;
-    document.body.style.paddingBottom = (h + 8) + 'px';
-  }catch(e){}
-}
-stickyClose.addEventListener('click', () => {
-  sticky.dataset.closed = '1';
-  hide(sticky);
-  document.body.style.paddingBottom = '';
-});
-function maybeShowSticky(){
-  if(window.matchMedia('(max-width:680px)').matches && sticky.dataset.closed !== '1'){
-    show(sticky);
-    padBodyForSticky();
-  }
-}
-window.addEventListener('resize', ()=>{ if(sticky.style.display==='block') padBodyForSticky(); });
-
+    stickyClose.addEventListener('click', () => {
+      sticky.dataset.closed = '1';
+      hide(sticky);
+      document.body.style.paddingBottom = '';
+    });
+    function maybeShowSticky(){
+      if(window.matchMedia('(max-width:680px)').matches && sticky.dataset.closed !== '1'){
+        show(sticky);
+        padBodyForSticky();
+      }
+    }
+    window.addEventListener('resize', ()=>{ if(sticky.style.display==='block') padBodyForSticky(); });
   </script>
 </body>
 </html>
