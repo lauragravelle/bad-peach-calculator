@@ -657,56 +657,63 @@
     });
 
     /* ==== RESET BUTTON (added) ==== */
-    resetBtn.addEventListener('click', () => {
-      form.reset();
+resetBtn.addEventListener('click', () => {
+  form.reset();
 
-      // Clear validation states
-      Object.keys(fields).forEach(k => {
-        const wrap = fields[k].wrap || fields[k].el.parentElement;
-        if (wrap) wrap.classList.remove('ok','error');
-      });
-
-      // Ensure selects return to placeholder
-      try {
-        document.getElementById('activity').value = '';
-        document.getElementById('goal').value = '';
-        const intensityEl = document.getElementById('intensity');
-        if (intensityEl) intensityEl.value = '';
-      } catch(e){}
-
-      // Clear results and hide section
-      tdeeOut.textContent = '—';
-      fatlossOut.textContent = '—';
-      maintainOut.textContent = '—';
-      muscleOut.textContent = '—';
-      proteinOut.textContent = '—';
-      proteinNote.textContent = '';
-      resultsEl.style.display = 'none';
-
-      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-
-    // Sticky helpers (original references preserved)
-    const sticky = document.getElementById('stickyCta');
-    const stickyClose = sticky.querySelector('.x');
-    function padBodyForSticky(){
-      try{
-        const h = sticky.offsetHeight || 0;
-        document.body.style.paddingBottom = (h + 8) + 'px';
-      }catch(e){}
+  // Clear validation states
+  Object.keys(fields).forEach(k => {
+    const wrap = fields[k].wrap || fields[k].el.parentElement;
+    if (wrap) {
+      wrap.classList.remove('ok');
+      wrap.classList.remove('error');
     }
-    stickyClose.addEventListener('click', () => {
-      sticky.dataset.closed = '1';
-      hide(sticky);
-      document.body.style.paddingBottom = '';
-    });
-    function maybeShowSticky(){
-      if(window.matchMedia('(max-width:680px)').matches && sticky.dataset.closed !== '1'){
-        show(sticky);
-        padBodyForSticky();
-      }
-    }
-    window.addEventListener('resize', ()=>{ if(sticky.style.display==='block') padBodyForSticky(); });
+  });
+
+  // Ensure selects return to placeholder
+  try {
+    document.getElementById('activity').value = '';
+    document.getElementById('goal').value = '';
+    const intensityEl = document.getElementById('intensity');
+    if (intensityEl) intensityEl.value = '';
+  } catch(e){}
+
+  // Clear results fully
+  tdeeOut.textContent = '';
+  fatlossOut.textContent = '';
+  maintainOut.textContent = '';
+  muscleOut.textContent = '';
+  proteinOut.textContent = '';
+  proteinNote.textContent = '';
+
+  // Hide results section
+  resultsEl.style.display = 'none';
+
+  // Scroll back to top of form
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+/* ==== Sticky helpers (original references preserved) ==== */
+const sticky = document.getElementById('stickyCta');
+const stickyClose = sticky.querySelector('.x');
+function padBodyForSticky(){
+  try{
+    const h = sticky.offsetHeight || 0;
+    document.body.style.paddingBottom = (h + 8) + 'px';
+  }catch(e){}
+}
+stickyClose.addEventListener('click', () => {
+  sticky.dataset.closed = '1';
+  hide(sticky);
+  document.body.style.paddingBottom = '';
+});
+function maybeShowSticky(){
+  if(window.matchMedia('(max-width:680px)').matches && sticky.dataset.closed !== '1'){
+    show(sticky);
+    padBodyForSticky();
+  }
+}
+window.addEventListener('resize', ()=>{ if(sticky.style.display==='block') padBodyForSticky(); });
+
   </script>
 </body>
 </html>
